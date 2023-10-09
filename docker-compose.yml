@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  db:
+    image: "postgres:${DB_VERSION}-alpine"
+    container_name: gohtmx-db
+    restart: always
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    networks:
+      - gohtmx
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_POST: ${DB_PORT}
+      POSTGRES_DB: ${DB_NAME}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", "${DB_NAME}", "-U", "${DB_USER}"]
+      timeout: 45s
+      interval: 10s
+      retries: 5
+
+  adminer:
+    image: adminer
+    container_name: gohtmx-adminer
+    restart: always
+    networks:
+      - gohtmx
+    ports:
+      - 8080:8080
+
+networks:
+  gohtmx:

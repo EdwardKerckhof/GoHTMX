@@ -1,0 +1,31 @@
+### Go ###
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Tmp
+tmp/*
+
+# Environment variables
+api.env.*
+.env*
+!.env.example
+!.env.development
+tmp
+*.env
+
+# Go workspace file
+go.work
+
+# Go Patch
+vendor/
+Godeps/
