@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/EdwardKerckhof/gohtmx/internal/postgres"
 	"github.com/EdwardKerckhof/gohtmx/internal/router/todo"
+	"github.com/EdwardKerckhof/gohtmx/internal/store/postgres"
 )
 
 const (

@@ -8,7 +8,7 @@ import (
 	"github.com/EdwardKerckhof/gohtmx/internal/domain"
 	"github.com/EdwardKerckhof/gohtmx/internal/domain/todo"
 	"github.com/EdwardKerckhof/gohtmx/internal/ports"
-	"github.com/EdwardKerckhof/gohtmx/internal/postgres"
+	"github.com/EdwardKerckhof/gohtmx/internal/store/postgres"
 )
 
 const (

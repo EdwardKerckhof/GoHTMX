@@ -7,9 +7,9 @@ import (
 	"syscall"
 
 	"github.com/EdwardKerckhof/gohtmx/config"
-	"github.com/EdwardKerckhof/gohtmx/internal/postgres"
 	"github.com/EdwardKerckhof/gohtmx/internal/router"
 	"github.com/EdwardKerckhof/gohtmx/internal/server"
+	"github.com/EdwardKerckhof/gohtmx/internal/store/postgres"
 	"github.com/EdwardKerckhof/gohtmx/pkg/logger"
 )
 
