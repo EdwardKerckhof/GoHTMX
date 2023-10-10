@@ -40,8 +40,8 @@ func (c *handlerImpl) RegisterRoutes() {
 	todoRouter.GET("", c.FindAll)
 	todoRouter.GET("/:id", c.FindById)
 	todoRouter.POST("", c.Create)
-	// todoRouter.PUT("/:id", c.Update)
-	// todoRouter.DELETE("/:id", c.Delete)
+	todoRouter.PUT("/:id", c.Update)
+	todoRouter.DELETE("/:id", c.Delete)
 }
 
 func (c *handlerImpl) FindAll(ctx *gin.Context) {
@@ -71,7 +71,7 @@ func (c *handlerImpl) FindAll(ctx *gin.Context) {
 }
 
 func (c *handlerImpl) FindById(ctx *gin.Context) {
-	var req findByIdRequest
+	var req idRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
 		return
@@ -112,62 +112,55 @@ func (c *handlerImpl) Create(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response.Success(todo))
 }
 
-// func (c *handlerImpl) Update(ctx *gin.Context) {
-// 	id, err := domain.ParseID(ctx.Param("id"))
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{
-// 			"message":      err.Error(),
-// 			"responseCode": http.StatusBadRequest,
-// 		})
-// 		return
-// 	}
+func (c *handlerImpl) Update(ctx *gin.Context) {
+	var req updateRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, response.Error(err))
+		return
+	}
+	var idReq idRequest
+	if err := ctx.ShouldBindUri(&idReq); err != nil {
+		ctx.JSON(http.StatusBadRequest, response.Error(err))
+		return
+	}
 
-// 	var todo todo.Todo
-// 	if err := ctx.ShouldBindJSON(&todo); err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{
-// 			"message":      err.Error(),
-// 			"responseCode": http.StatusBadRequest,
-// 		})
-// 		return
-// 	}
+	id, err := domain.ParseID(idReq.ID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, response.Error(err))
+		return
+	}
 
-// 	todo.ID = id
+	arg := db.UpdateTodoParams{
+		ID:        id,
+		Title:     req.Title,
+		Completed: req.Completed,
+	}
+	todo, err := c.store.UpdateTodo(ctx, arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, response.Error(err))
+		return
+	}
 
-// 	if err := c.store.TodoStore.Update(&todo); err != nil {
-// 		ctx.JSON(http.StatusInternalServerError, gin.H{
-// 			"message":      err.Error(),
-// 			"responseCode": http.StatusInternalServerError,
-// 		})
-// 		return
-// 	}
+	ctx.JSON(http.StatusOK, response.Success(todo))
+}
 
-// 	ctx.JSON(http.StatusOK, gin.H{
-// 		"message":      "success",
-// 		"responseCode": http.StatusOK,
-// 		"data":         todo,
-// 	})
-// }
+func (c *handlerImpl) Delete(ctx *gin.Context) {
+	var req idRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, response.Error(err))
+		return
+	}
 
-// func (c *handlerImpl) Delete(ctx *gin.Context) {
-// 	id, err := domain.ParseID(ctx.Param("id"))
-// 	if err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{
-// 			"message":      err.Error(),
-// 			"responseCode": http.StatusBadRequest,
-// 		})
-// 		return
-// 	}
+	id, err := domain.ParseID(req.ID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, response.Error(err))
+		return
+	}
 
-// 	if err := c.store.TodoStore.Delete(id); err != nil {
-// 		ctx.JSON(http.StatusInternalServerError, gin.H{
-// 			"message":      err.Error(),
-// 			"responseCode": http.StatusInternalServerError,
-// 		})
-// 		return
-// 	}
+	if err := c.store.DeleteTodo(ctx, id); err != nil {
+		ctx.JSON(http.StatusInternalServerError, response.Error(err))
+		return
+	}
 
-// 	ctx.JSON(http.StatusOK, gin.H{
-// 		"message":      "success",
-// 		"responseCode": http.StatusNoContent,
-// 	})
-// }
+	ctx.JSON(http.StatusNoContent, nil)
+}
