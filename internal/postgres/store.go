@@ -14,7 +14,7 @@ type Store struct {
 }
 
 func NewStore(config *config.Config) (*Store, error) {
-	dataSourceName := getDataSourceName(config)
+	dataSourceName := formatDataSourceName(config)
 	db, err := sqlx.Connect("postgres", dataSourceName)
 	if err != nil {
 		return nil, fmt.Errorf("error opening database connection: %w", err)
@@ -28,7 +28,7 @@ func NewStore(config *config.Config) (*Store, error) {
 	}, nil
 }
 
-func getDataSourceName(config *config.Config) string {
+func formatDataSourceName(config *config.Config) string {
 	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		config.Db.Host,
 		config.Db.Port,

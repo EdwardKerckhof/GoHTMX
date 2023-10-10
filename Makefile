@@ -1,5 +1,5 @@
 #!make
-include .env.development
+include .env
 
 .DEFAULT_GOAL := run
 

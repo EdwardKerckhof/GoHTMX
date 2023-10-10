@@ -21,25 +21,21 @@ func main() {
 	}
 
 	// Setup app logger
-	appLogger := logger.New(config)
-	appLogger.InitLogger()
-	appLogger.Infof("AppVersion: %s, LogLevel: %s, Mode: %s", config.Api.Version, config.Logger.Level, config.Api.Mode)
-
-	// Create a new appRouter router
-	appRouter := router.New(appLogger)
+	logger := logger.New(config)
+	logger.InitLogger()
+	logger.Infof("AppVersion: %s, LogLevel: %s, Mode: %s", config.Api.Version, config.Logger.Level, config.Api.Mode)
 
 	// Create a new database connection
 	store, err := postgres.NewStore(config)
 	if err != nil {
-		appLogger.Fatalf("error creating database connection: %s", err.Error())
+		logger.Fatalf(err.Error())
 	}
 
-	// Setup handlers
-	todoRouter := router.NewTodoRouter(appRouter, *store)
-	todoRouter.RegisterRoutes()
+	// Create a new router router
+	router := router.New(store)
 
 	// Create a new server instance
-	server := server.New(appRouter, config, appLogger)
+	server := server.New(router, config, logger)
 
 	// Start the server
 	server.Start()

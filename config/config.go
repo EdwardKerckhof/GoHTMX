@@ -1,8 +1,6 @@
 package config
 
 import (
-	"os"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/viper"
 )
@@ -38,13 +36,8 @@ type Logger struct {
 
 // Load reads in an env file and loads into a config struct
 func Load(path string) (config *Config, err error) {
-	env := os.Getenv("GO_ENV")
-	if env == "" {
-		env = "development"
-	}
-
 	viper.AddConfigPath(path)
-	viper.SetConfigName(".env." + env)
+	viper.SetConfigName(".env")
 	viper.SetConfigType("env")
 	viper.AutomaticEnv()
 

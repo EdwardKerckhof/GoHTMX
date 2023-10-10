@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/EdwardKerckhof/gohtmx/config"
-	"github.com/EdwardKerckhof/gohtmx/internal/router"
 	"github.com/EdwardKerckhof/gohtmx/pkg/logger"
+	"github.com/gin-gonic/gin"
 )
 
 type HttpServer interface {
@@ -17,34 +17,32 @@ type HttpServer interface {
 }
 
 type httpServer struct {
-	config *config.Config
 	logger logger.Logger
 	server *http.Server
 }
 
-func New(router router.Router, config *config.Config, logger logger.Logger) HttpServer {
+func New(router *gin.Engine, config *config.Config, logger logger.Logger) HttpServer {
 	return &httpServer{
-		config: config,
 		logger: logger,
 		server: &http.Server{
 			Addr:    fmt.Sprintf(":%d", config.Api.Port),
-			Handler: router.Engine(),
+			Handler: router,
 		},
 	}
 }
 
 func (s *httpServer) Start() {
-	port := s.config.Api.Port
+	addr := s.server.Addr
 	go func() {
 		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			s.logger.Fatalf(
-				"failed to stater HttpServer listen port %d, err=%s",
-				port, err.Error(),
+				"failed to stater HttpServer listen port %s, err=%s",
+				addr, err.Error(),
 			)
 		}
 	}()
 
-	s.logger.Infof("server listening on port: %d", port)
+	s.logger.Infof("server listening on port: %s", addr)
 }
 
 func (s *httpServer) Stop() {

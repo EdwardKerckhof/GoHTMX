@@ -5,24 +5,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/EdwardKerckhof/gohtmx/pkg/logger"
+	"github.com/EdwardKerckhof/gohtmx/internal/postgres"
+	"github.com/EdwardKerckhof/gohtmx/internal/router/todo"
 )
 
 const (
 	basePath = "/api/v1"
 )
 
-type Router interface {
-	Engine() *gin.Engine
-	BaseRouter() *gin.RouterGroup
-}
-
-type RouterImpl struct {
-	engine *gin.Engine
-	rg     *gin.RouterGroup
-}
-
-func New(logger logger.Logger) Router {
+func New(store *postgres.Store) *gin.Engine {
 	router := gin.New()
 
 	router.Use(gin.Recovery())
@@ -35,16 +26,11 @@ func New(logger logger.Logger) Router {
 		})
 	})
 
-	return &RouterImpl{
-		engine: router,
-		rg:     router.Group(basePath),
-	}
-}
+	baseRouter := router.Group(basePath)
 
-func (r *RouterImpl) Engine() *gin.Engine {
-	return r.engine
-}
+	// Setup handlers
+	todoRouter := todo.New(baseRouter, store)
+	todoRouter.RegisterRoutes()
 
-func (r *RouterImpl) BaseRouter() *gin.RouterGroup {
-	return r.rg
+	return router
 }
