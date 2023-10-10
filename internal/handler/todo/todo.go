@@ -7,7 +7,6 @@ import (
 
 	"github.com/EdwardKerckhof/gohtmx/internal/db"
 	"github.com/EdwardKerckhof/gohtmx/internal/domain"
-	"github.com/EdwardKerckhof/gohtmx/internal/ports"
 	"github.com/EdwardKerckhof/gohtmx/pkg/response"
 )
 
@@ -15,12 +14,21 @@ const (
 	prefix = "/todos"
 )
 
+type handler interface {
+	RegisterRoutes()
+	FindAll(ctx *gin.Context)
+	FindById(ctx *gin.Context)
+	Create(ctx *gin.Context)
+	// Update(ctx *gin.Context)
+	// Delete(ctx *gin.Context)
+}
+
 type handlerImpl struct {
 	router *gin.RouterGroup
 	store  *db.Store
 }
 
-func New(router *gin.RouterGroup, store *db.Store) ports.TodoRouter {
+func New(router *gin.RouterGroup, store *db.Store) handler {
 	return &handlerImpl{
 		router: router,
 		store:  store,

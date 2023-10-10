@@ -15,7 +15,7 @@ type Todo struct {
 	ID        uuid.UUID          `json:"id"`
 	Title     string             `json:"title"`
 	Completed bool               `json:"completed"`
-	CreatedAt time.Time          `json:"created_at"`
-	UpdatedAt time.Time          `json:"updated_at"`
-	DeletedAt pgtype.Timestamptz `json:"deleted_at"`
+	CreatedAt time.Time          `json:"createdAt"`
+	UpdatedAt time.Time          `json:"updatedAt"`
+	DeletedAt pgtype.Timestamptz `json:"deletedAt"`
 }
