@@ -19,31 +19,40 @@ type handler interface {
 	FindAll(ctx *gin.Context)
 	FindById(ctx *gin.Context)
 	Create(ctx *gin.Context)
-	// Update(ctx *gin.Context)
-	// Delete(ctx *gin.Context)
+	Update(ctx *gin.Context)
+	Delete(ctx *gin.Context)
+	RenderIndex(ctx *gin.Context)
 }
 
 type handlerImpl struct {
-	router *gin.RouterGroup
-	store  *db.Store
+	apiRouter  *gin.RouterGroup
+	viewRouter *gin.RouterGroup
+	store      *db.Store
 }
 
-func New(router *gin.RouterGroup, store *db.Store) handler {
+func New(apiRouter *gin.RouterGroup, viewRouter *gin.RouterGroup, store *db.Store) handler {
 	return &handlerImpl{
-		router: router,
-		store:  store,
+		apiRouter:  apiRouter,
+		viewRouter: viewRouter,
+		store:      store,
 	}
 }
 
 func (c *handlerImpl) RegisterRoutes() {
-	todoRouter := c.router.Group(prefix)
+	// /api/v1/todos
+	todoRouter := c.apiRouter.Group(prefix)
 	todoRouter.GET("", c.FindAll)
 	todoRouter.GET("/:id", c.FindById)
 	todoRouter.POST("", c.Create)
 	todoRouter.PUT("/:id", c.Update)
 	todoRouter.DELETE("/:id", c.Delete)
+
+	// /todos
+	viewsRouter := c.viewRouter.Group(prefix)
+	viewsRouter.GET("", c.RenderIndex)
 }
 
+// REST API
 func (c *handlerImpl) FindAll(ctx *gin.Context) {
 	var req findAllRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
@@ -163,4 +172,11 @@ func (c *handlerImpl) Delete(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusNoContent, nil)
+}
+
+// Views
+func (c *handlerImpl) RenderIndex(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "todos/index.html", gin.H{
+		"title": "Todo App",
+	})
 }
