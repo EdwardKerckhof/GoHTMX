@@ -176,7 +176,21 @@ func (c *handlerImpl) Delete(ctx *gin.Context) {
 
 // Views
 func (c *handlerImpl) RenderIndex(ctx *gin.Context) {
-	ctx.HTML(http.StatusOK, "todos/index.html", gin.H{
+	arg := db.FindAllTodosParams{
+		Limit:  50,
+		Offset: 0,
+	}
+	// TODO: use service
+	todos, err := c.store.FindAllTodos(ctx, arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, response.Error(err))
+		return
+	}
+
+	data := gin.H{
 		"title": "Todo App",
-	})
+		"todos": todos,
+	}
+
+	ctx.HTML(http.StatusOK, "todos/index.html", data)
 }
