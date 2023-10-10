@@ -7,9 +7,9 @@ import (
 	"syscall"
 
 	"github.com/EdwardKerckhof/gohtmx/config"
+	"github.com/EdwardKerckhof/gohtmx/internal/db"
 	"github.com/EdwardKerckhof/gohtmx/internal/router"
 	"github.com/EdwardKerckhof/gohtmx/internal/server"
-	"github.com/EdwardKerckhof/gohtmx/internal/store/postgres"
 	"github.com/EdwardKerckhof/gohtmx/pkg/logger"
 )
 
@@ -25,11 +25,9 @@ func main() {
 	logger.InitLogger()
 	logger.Infof("AppVersion: %s, LogLevel: %s, Mode: %s", config.Api.Version, config.Logger.Level, config.Api.Mode)
 
-	// Create a new database connection
-	store, err := postgres.NewStore(config)
-	if err != nil {
-		logger.Fatalf(err.Error())
-	}
+	// Create a new store instance
+	store := db.NewStore(config, logger)
+	defer store.Close()
 
 	// Create a new router router
 	router := router.New(store)

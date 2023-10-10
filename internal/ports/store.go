@@ -3,13 +3,13 @@ package ports
 import (
 	"github.com/google/uuid"
 
-	"github.com/EdwardKerckhof/gohtmx/internal/domain/todo"
+	"github.com/EdwardKerckhof/gohtmx/internal/domain"
 )
 
 type TodoStore interface {
-	FindAll() ([]todo.Todo, error)
-	FindById(id uuid.UUID) (*todo.Todo, error)
-	Create(todo *todo.Todo) error
-	Update(todo *todo.Todo) error
+	FindAll() ([]domain.Todo, error)
+	FindById(id uuid.UUID) (*domain.Todo, error)
+	Create(todo *domain.Todo) error
+	Update(todo *domain.Todo) error
 	Delete(id uuid.UUID) error
 }

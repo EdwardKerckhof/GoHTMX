@@ -1,9 +1,7 @@
-package todo
-
-import "github.com/EdwardKerckhof/gohtmx/internal/domain"
+package domain
 
 type Todo struct {
-	domain.BaseEntity
+	BaseEntity
 	Title     string `json:"title" db:"title"`
 	Completed bool   `json:"completed" db:"completed"`
 }

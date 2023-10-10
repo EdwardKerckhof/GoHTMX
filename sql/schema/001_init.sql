@@ -1,3 +1,5 @@
+-- +goose Up
+
 CREATE TABLE "todos" (
   "id" UUID PRIMARY KEY,
   "title" VARCHAR(255) NOT NULL,
@@ -8,3 +10,7 @@ CREATE TABLE "todos" (
 );
 
 CREATE INDEX "todos_deleted_at_idx" ON "todos" ("deleted_at");
+
+-- +goose Down
+
+DROP TABLE IF EXISTS "todos";

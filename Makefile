@@ -3,7 +3,7 @@ include .env
 
 .DEFAULT_GOAL := run
 
-.PHONY: build run clean create_db drop_db migrate_up migrate_down build_tmp develop deps_reset tidy deps_upgrade deps_cleancache
+.PHONY: build run clean create_db drop_db migrate_up migrate_down sqlc build_tmp develop deps_reset tidy deps_upgrade deps_cleancache
 
 build:
 	GOARCH=amd64 GOOS=darwin go build -o ./bin/${API_BINARY}-darwin ./cmd/gohtmx
@@ -24,10 +24,13 @@ drop_db:
 	docker exec -it ${DB_NAME}-db dropdb ${DB_NAME}
 
 migrate_up:
-	migrate -path db/migrations -database "postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable" -verbose up
+	goose -dir sql/schema postgres "postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable" up
 
 migrate_down:
-	migrate -path db/migrations -database "postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable" -verbose down
+	goose -dir sql/schema postgres "postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable" down
+
+sqlc:
+	sqlc generate
 
 build_tmp:
 	go build -o ./tmp/gohtmx ./cmd/gohtmx

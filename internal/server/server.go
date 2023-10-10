@@ -11,18 +11,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type HttpServer interface {
-	Start()
-	Stop()
-}
-
-type httpServer struct {
+type Server struct {
 	logger logger.Logger
 	server *http.Server
 }
 
-func New(router *gin.Engine, config *config.Config, logger logger.Logger) HttpServer {
-	return &httpServer{
+type serverImpl interface {
+	Start()
+	Stop()
+}
+
+func New(router *gin.Engine, config *config.Config, logger logger.Logger) serverImpl {
+	return &Server{
 		logger: logger,
 		server: &http.Server{
 			Addr:    fmt.Sprintf(":%d", config.Api.Port),
@@ -31,7 +31,7 @@ func New(router *gin.Engine, config *config.Config, logger logger.Logger) HttpSe
 	}
 }
 
-func (s *httpServer) Start() {
+func (s *Server) Start() {
 	addr := s.server.Addr
 	go func() {
 		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -45,7 +45,7 @@ func (s *httpServer) Start() {
 	s.logger.Infof("server listening on port: %s", addr)
 }
 
-func (s *httpServer) Stop() {
+func (s *Server) Stop() {
 	ctx, cancel := context.WithTimeout(
 		context.Background(), time.Duration(3)*time.Second,
 	)

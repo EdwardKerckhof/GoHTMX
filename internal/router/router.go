@@ -5,15 +5,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/EdwardKerckhof/gohtmx/internal/router/todo"
-	"github.com/EdwardKerckhof/gohtmx/internal/store/postgres"
+	"github.com/EdwardKerckhof/gohtmx/internal/db"
+	"github.com/EdwardKerckhof/gohtmx/internal/handler/todo"
 )
 
 const (
 	basePath = "/api/v1"
 )
 
-func New(store *postgres.Store) *gin.Engine {
+func New(store *db.Store) *gin.Engine {
 	router := gin.New()
 
 	router.Use(gin.Recovery())
@@ -29,8 +29,8 @@ func New(store *postgres.Store) *gin.Engine {
 	baseRouter := router.Group(basePath)
 
 	// Setup handlers
-	todoRouter := todo.New(baseRouter, store)
-	todoRouter.RegisterRoutes()
+	todoHandler := todo.New(baseRouter, store)
+	todoHandler.RegisterRoutes()
 
 	return router
 }
