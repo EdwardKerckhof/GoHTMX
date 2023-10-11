@@ -29,6 +29,9 @@
 - [ ] Deployment
 - [ ] Monitoring
 - [ ] Caching
+- [ ] Use service layer
+- [ ] Create ports
+- [ ] Create DTOs
 
 ### Web
 
