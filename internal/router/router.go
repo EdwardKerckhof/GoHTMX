@@ -10,8 +10,7 @@ import (
 )
 
 const (
-	apiPath  = "/api/v1"
-	viewPath = ""
+	apiPath = "/api/v1"
 )
 
 func New(store *db.Store) *gin.Engine {
@@ -20,7 +19,7 @@ func New(store *db.Store) *gin.Engine {
 	// Middleware
 	router.Use(gin.Recovery(), gin.Logger())
 
-	// Healthcheck
+	// Health check
 	router.GET("/healthcheck", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message":      "healthy",
@@ -28,15 +27,11 @@ func New(store *db.Store) *gin.Engine {
 		})
 	})
 
-	// Setup template rendering
-	router.LoadHTMLGlob("web/templates/**/*")
-
 	// Setup base routers
 	apiRouter := router.Group(apiPath)
-	viewRouter := router.Group(viewPath)
 
 	// Setup handlers
-	todoHandler := todo.New(apiRouter, viewRouter, store)
+	todoHandler := todo.New(apiRouter, store)
 	todoHandler.RegisterRoutes()
 
 	return router

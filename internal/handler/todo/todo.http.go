@@ -10,50 +10,8 @@ import (
 	"github.com/EdwardKerckhof/gohtmx/pkg/response"
 )
 
-const (
-	prefix = "/todos"
-)
-
-type handler interface {
-	RegisterRoutes()
-	FindAll(ctx *gin.Context)
-	FindById(ctx *gin.Context)
-	Create(ctx *gin.Context)
-	Update(ctx *gin.Context)
-	Delete(ctx *gin.Context)
-	RenderIndex(ctx *gin.Context)
-}
-
-type handlerImpl struct {
-	apiRouter  *gin.RouterGroup
-	viewRouter *gin.RouterGroup
-	store      *db.Store
-}
-
-func New(apiRouter *gin.RouterGroup, viewRouter *gin.RouterGroup, store *db.Store) handler {
-	return &handlerImpl{
-		apiRouter:  apiRouter,
-		viewRouter: viewRouter,
-		store:      store,
-	}
-}
-
-func (c *handlerImpl) RegisterRoutes() {
-	// /api/v1/todos
-	todoRouter := c.apiRouter.Group(prefix)
-	todoRouter.GET("", c.FindAll)
-	todoRouter.GET("/:id", c.FindById)
-	todoRouter.POST("", c.Create)
-	todoRouter.PUT("/:id", c.Update)
-	todoRouter.DELETE("/:id", c.Delete)
-
-	// /todos
-	viewsRouter := c.viewRouter.Group(prefix)
-	viewsRouter.GET("", c.RenderIndex)
-}
-
-// REST API
-func (c *handlerImpl) FindAll(ctx *gin.Context) {
+// TODO: use service
+func (c *todoHandler) FindAll(ctx *gin.Context) {
 	var req findAllRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
@@ -79,7 +37,7 @@ func (c *handlerImpl) FindAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response.Paginated(todos, todosCount, req.PaginationRequest))
 }
 
-func (c *handlerImpl) FindById(ctx *gin.Context) {
+func (c *todoHandler) FindById(ctx *gin.Context) {
 	var req idRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
@@ -101,7 +59,7 @@ func (c *handlerImpl) FindById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response.Success(todo))
 }
 
-func (c *handlerImpl) Create(ctx *gin.Context) {
+func (c *todoHandler) Create(ctx *gin.Context) {
 	var req createRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
@@ -121,7 +79,7 @@ func (c *handlerImpl) Create(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response.Success(todo))
 }
 
-func (c *handlerImpl) Update(ctx *gin.Context) {
+func (c *todoHandler) Update(ctx *gin.Context) {
 	var req updateRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
@@ -153,7 +111,7 @@ func (c *handlerImpl) Update(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response.Success(todo))
 }
 
-func (c *handlerImpl) Delete(ctx *gin.Context) {
+func (c *todoHandler) Delete(ctx *gin.Context) {
 	var req idRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
@@ -172,25 +130,4 @@ func (c *handlerImpl) Delete(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusNoContent, nil)
-}
-
-// Views
-func (c *handlerImpl) RenderIndex(ctx *gin.Context) {
-	arg := db.FindAllTodosParams{
-		Limit:  50,
-		Offset: 0,
-	}
-	// TODO: use service
-	todos, err := c.store.FindAllTodos(ctx, arg)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, response.Error(err))
-		return
-	}
-
-	data := gin.H{
-		"title": "Todo App",
-		"todos": todos,
-	}
-
-	ctx.HTML(http.StatusOK, "todos/index.html", data)
 }
