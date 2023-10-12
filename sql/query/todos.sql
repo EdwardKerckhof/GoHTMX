@@ -13,7 +13,7 @@ WHERE id = $1
 LIMIT 1;
 
 -- name: CreateTodo :one
-INSERT INTO todos (id, title)
+INSERT INTO todos (title, user_id)
 VALUES ($1, $2)
 RETURNING *;
 

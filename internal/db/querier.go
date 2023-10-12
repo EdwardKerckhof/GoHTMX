@@ -12,11 +12,19 @@ import (
 
 type Querier interface {
 	CountTodos(ctx context.Context) (int64, error)
+	CountUsers(ctx context.Context) (int64, error)
 	CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteTodo(ctx context.Context, id uuid.UUID) error
+	DeleteUser(ctx context.Context, id uuid.UUID) error
 	FindAllTodos(ctx context.Context, arg FindAllTodosParams) ([]Todo, error)
+	FindAllUsers(ctx context.Context, arg FindAllUsersParams) ([]User, error)
 	FindTodoById(ctx context.Context, id uuid.UUID) (Todo, error)
+	FindUserByEmail(ctx context.Context, email string) (User, error)
+	FindUserById(ctx context.Context, id uuid.UUID) (User, error)
+	FindUserByUsername(ctx context.Context, username string) (User, error)
 	UpdateTodo(ctx context.Context, arg UpdateTodoParams) (Todo, error)
+	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)
