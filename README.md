@@ -4,12 +4,12 @@
 
 ### API
 
-- [ ] Pagination
+- [x] Pagination
 - [ ] Filtering
 - [ ] Sorting
-- [ ] Requests
-- [ ] Responses
-- [ ] Error handling
+- [x] Requests
+- [x] Responses
+- [ ] Error handling (error package)
 - [ ] Validations
 - [ ] Tests
 - [ ] Patch
@@ -29,9 +29,8 @@
 - [ ] Deployment
 - [ ] Monitoring
 - [ ] Caching
-- [ ] Use service layer
-- [ ] Create ports
-- [ ] Create DTOs
+- [x] Use service layer
+- [x] Create DTOs
 
 ### Web
 
