@@ -16,7 +16,3 @@ type BaseEntity struct {
 func GenerateID() uuid.UUID {
 	return uuid.New()
 }
-
-func ParseID(id string) (uuid.UUID, error) {
-	return uuid.Parse(id)
-}

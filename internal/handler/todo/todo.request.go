@@ -2,10 +2,6 @@ package todo
 
 import "github.com/EdwardKerckhof/gohtmx/pkg/request"
 
-type idRequest struct {
-	ID string `uri:"id" binding:"required,uuid"`
-}
-
 type findAllRequest struct {
 	request.PaginationRequest
 	Sort string `form:"sort,default=id" binding:"omitempty,oneof=id title createdAt"`

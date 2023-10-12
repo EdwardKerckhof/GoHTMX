@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/EdwardKerckhof/gohtmx/internal/db"
-	"github.com/EdwardKerckhof/gohtmx/internal/domain"
+	"github.com/EdwardKerckhof/gohtmx/pkg/request"
 	"github.com/EdwardKerckhof/gohtmx/pkg/response"
 )
 
@@ -24,6 +24,7 @@ type handler interface {
 	Delete(ctx *gin.Context)
 }
 
+// TODO: use service instead of store
 type todoHandler struct {
 	apiRouter *gin.RouterGroup
 	store     *db.Store
@@ -73,13 +74,13 @@ func (c *todoHandler) FindAll(ctx *gin.Context) {
 }
 
 func (c *todoHandler) FindById(ctx *gin.Context) {
-	var req idRequest
+	var req request.IDRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
 		return
 	}
 
-	id, err := domain.ParseID(req.ID)
+	id, err := req.ParseID()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
 		return
@@ -87,6 +88,7 @@ func (c *todoHandler) FindById(ctx *gin.Context) {
 
 	todo, err := c.store.FindTodoById(ctx, id)
 	if err != nil {
+		// TODO: better error handling
 		ctx.JSON(http.StatusInternalServerError, response.Error(err))
 		return
 	}
@@ -121,13 +123,13 @@ func (c *todoHandler) Update(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
 		return
 	}
-	var idReq idRequest
+	var idReq request.IDRequest
 	if err := ctx.ShouldBindUri(&idReq); err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
 		return
 	}
 
-	id, err := domain.ParseID(idReq.ID)
+	id, err := idReq.ParseID()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
 		return
@@ -148,13 +150,13 @@ func (c *todoHandler) Update(ctx *gin.Context) {
 }
 
 func (c *todoHandler) Delete(ctx *gin.Context) {
-	var req idRequest
+	var req request.IDRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
 		return
 	}
 
-	id, err := domain.ParseID(req.ID)
+	id, err := req.ParseID()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
 		return
