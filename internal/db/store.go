@@ -16,7 +16,7 @@ type Store struct {
 	db *pgx.Conn
 }
 
-func NewStore(config *config.Config, logger logger.Logger) *Store {
+func NewStore(config *config.Config, logger logger.Logger) Store {
 	dbURL := formatDatabaseURL(config)
 	conn, err := pgx.Connect(context.Background(), dbURL)
 	if err != nil {
@@ -24,7 +24,7 @@ func NewStore(config *config.Config, logger logger.Logger) *Store {
 		os.Exit(1)
 	}
 
-	return &Store{
+	return Store{
 		Queries: New(conn),
 		db:      conn,
 	}

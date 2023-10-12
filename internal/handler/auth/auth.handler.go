@@ -3,9 +3,11 @@ package auth
 import (
 	"net/http"
 
-	"github.com/EdwardKerckhof/gohtmx/internal/db"
-	"github.com/EdwardKerckhof/gohtmx/pkg/response"
 	"github.com/gin-gonic/gin"
+
+	authRequest "github.com/EdwardKerckhof/gohtmx/internal/dto/request/auth"
+	"github.com/EdwardKerckhof/gohtmx/internal/dto/response"
+	authService "github.com/EdwardKerckhof/gohtmx/internal/service/auth"
 )
 
 const (
@@ -18,16 +20,15 @@ type handler interface {
 	Login(ctx *gin.Context)
 }
 
-// TODO: use service instead of store and in the service use DTOs
 type authHandler struct {
 	apiRouter *gin.RouterGroup
-	store     *db.Store
+	service   authService.Service
 }
 
-func New(apiRouter *gin.RouterGroup, store *db.Store) handler {
+func New(apiRouter *gin.RouterGroup, authService authService.Service) handler {
 	return &authHandler{
 		apiRouter: apiRouter,
-		store:     store,
+		service:   authService,
 	}
 }
 
@@ -39,24 +40,13 @@ func (h *authHandler) RegisterRoutes() {
 }
 
 func (h *authHandler) Register(ctx *gin.Context) {
-	var req registerRequest
+	var req authRequest.RegisterRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
 		return
 	}
 
-	hashedPassword, err := req.HashPassword()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, response.Error(err))
-		return
-	}
-
-	arg := db.CreateUserParams{
-		Username: req.Username,
-		Password: hashedPassword,
-		Email:    req.Email,
-	}
-	user, err := h.store.CreateUser(ctx, arg)
+	user, err := h.service.Register(ctx, req)
 	if err != nil {
 		// TODO: better error handling
 		ctx.JSON(http.StatusInternalServerError, response.Error(err))
@@ -67,4 +57,5 @@ func (h *authHandler) Register(ctx *gin.Context) {
 }
 
 func (h *authHandler) Login(ctx *gin.Context) {
+	panic("unimplemented")
 }

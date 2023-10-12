@@ -1,8 +1,8 @@
 package user
 
-import "github.com/EdwardKerckhof/gohtmx/pkg/request"
+import "github.com/EdwardKerckhof/gohtmx/internal/dto/request"
 
-type findAllRequest struct {
+type FindAllRequest struct {
 	request.PaginationRequest
 	Sort string `form:"sort,default=id" binding:"omitempty,oneof=id username createdAt"`
 }

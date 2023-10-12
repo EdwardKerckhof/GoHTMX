@@ -3,9 +3,10 @@ package user
 import (
 	"net/http"
 
-	"github.com/EdwardKerckhof/gohtmx/internal/db"
-	"github.com/EdwardKerckhof/gohtmx/pkg/request"
-	"github.com/EdwardKerckhof/gohtmx/pkg/response"
+	"github.com/EdwardKerckhof/gohtmx/internal/dto/request"
+	userReq "github.com/EdwardKerckhof/gohtmx/internal/dto/request/user"
+	"github.com/EdwardKerckhof/gohtmx/internal/dto/response"
+	userService "github.com/EdwardKerckhof/gohtmx/internal/service/user"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,13 +22,13 @@ type handler interface {
 
 type userHandler struct {
 	apiRouter *gin.RouterGroup
-	store     *db.Store
+	service   userService.Service
 }
 
-func New(apiRouter *gin.RouterGroup, store *db.Store) handler {
+func New(apiRouter *gin.RouterGroup, service userService.Service) handler {
 	return &userHandler{
 		apiRouter: apiRouter,
-		store:     store,
+		service:   service,
 	}
 }
 
@@ -39,23 +40,19 @@ func (h *userHandler) RegisterRoutes() {
 }
 
 func (h *userHandler) FindAll(ctx *gin.Context) {
-	var req findAllRequest
+	var req userReq.FindAllRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
 		return
 	}
 
-	arg := db.FindAllUsersParams{
-		Limit:  req.Size,
-		Offset: (req.Page - 1) * req.Size,
-	}
-	users, err := h.store.FindAllUsers(ctx, arg)
+	users, err := h.service.FindAll(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, response.Error(err))
 		return
 	}
 
-	usersCount, err := h.store.CountUsers(ctx)
+	usersCount, err := h.service.Count(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, response.Error(err))
 		return
@@ -71,13 +68,7 @@ func (h *userHandler) FindById(ctx *gin.Context) {
 		return
 	}
 
-	id, err := req.ParseID()
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, response.Error(err))
-		return
-	}
-
-	user, err := h.store.FindUserById(ctx, id)
+	user, err := h.service.FindById(ctx, req)
 	if err != nil {
 		// TODO: better error handling
 		ctx.JSON(http.StatusInternalServerError, response.Error(err))

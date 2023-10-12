@@ -7,15 +7,18 @@ import (
 
 	"github.com/EdwardKerckhof/gohtmx/internal/db"
 	"github.com/EdwardKerckhof/gohtmx/internal/handler/auth"
-	"github.com/EdwardKerckhof/gohtmx/internal/handler/todo"
-	"github.com/EdwardKerckhof/gohtmx/internal/handler/user"
+	todoHandler "github.com/EdwardKerckhof/gohtmx/internal/handler/todo"
+	userHandler "github.com/EdwardKerckhof/gohtmx/internal/handler/user"
+	authService "github.com/EdwardKerckhof/gohtmx/internal/service/auth"
+	todoService "github.com/EdwardKerckhof/gohtmx/internal/service/todo"
+	userService "github.com/EdwardKerckhof/gohtmx/internal/service/user"
 )
 
 const (
 	apiPath = "/api/v1"
 )
 
-func New(store *db.Store) *gin.Engine {
+func New(store db.Store) *gin.Engine {
 	router := gin.New()
 
 	// Middleware
@@ -32,14 +35,19 @@ func New(store *db.Store) *gin.Engine {
 	// Setup base routers
 	apiRouter := router.Group(apiPath)
 
+	// Setup services
+	authService := authService.New(store)
+	userService := userService.New(store)
+	todoService := todoService.New(store)
+
 	// Setup handlers
-	authHandler := auth.New(apiRouter, store)
+	authHandler := auth.New(apiRouter, authService)
 	authHandler.RegisterRoutes()
 
-	userHandler := user.New(apiRouter, store)
+	userHandler := userHandler.New(apiRouter, userService)
 	userHandler.RegisterRoutes()
 
-	todoHandler := todo.New(apiRouter, store)
+	todoHandler := todoHandler.New(apiRouter, todoService)
 	todoHandler.RegisterRoutes()
 
 	return router
