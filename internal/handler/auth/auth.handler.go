@@ -1,7 +1,10 @@
 package auth
 
 import (
+	"net/http"
+
 	"github.com/EdwardKerckhof/gohtmx/internal/db"
+	"github.com/EdwardKerckhof/gohtmx/pkg/response"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,7 +18,7 @@ type handler interface {
 	Login(ctx *gin.Context)
 }
 
-// TODO: use service instead of store
+// TODO: use service instead of store and in the service use DTOs
 type authHandler struct {
 	apiRouter *gin.RouterGroup
 	store     *db.Store
@@ -36,6 +39,31 @@ func (h *authHandler) RegisterRoutes() {
 }
 
 func (h *authHandler) Register(ctx *gin.Context) {
+	var req registerRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, response.Error(err))
+		return
+	}
+
+	hashedPassword, err := req.HashPassword()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, response.Error(err))
+		return
+	}
+
+	arg := db.CreateUserParams{
+		Username: req.Username,
+		Password: hashedPassword,
+		Email:    req.Email,
+	}
+	user, err := h.store.CreateUser(ctx, arg)
+	if err != nil {
+		// TODO: better error handling
+		ctx.JSON(http.StatusInternalServerError, response.Error(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response.Success(user))
 }
 
 func (h *authHandler) Login(ctx *gin.Context) {

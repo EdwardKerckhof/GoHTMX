@@ -6,7 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/EdwardKerckhof/gohtmx/internal/db"
+	"github.com/EdwardKerckhof/gohtmx/internal/handler/auth"
 	"github.com/EdwardKerckhof/gohtmx/internal/handler/todo"
+	"github.com/EdwardKerckhof/gohtmx/internal/handler/user"
 )
 
 const (
@@ -31,6 +33,12 @@ func New(store *db.Store) *gin.Engine {
 	apiRouter := router.Group(apiPath)
 
 	// Setup handlers
+	authHandler := auth.New(apiRouter, store)
+	authHandler.RegisterRoutes()
+
+	userHandler := user.New(apiRouter, store)
+	userHandler.RegisterRoutes()
+
 	todoHandler := todo.New(apiRouter, store)
 	todoHandler.RegisterRoutes()
 
