@@ -38,7 +38,7 @@ func (s authService) Register(ctx context.Context, req authRequest.RegisterReque
 	if err != nil {
 		return authResponse.Auth{}, err
 	}
-	return authResponse.FromDBAuth(user), nil
+	return authResponse.FromDB(user), nil
 }
 
 func (s authService) Login(ctx context.Context, req authRequest.LoginRequest) (authResponse.Auth, error) {

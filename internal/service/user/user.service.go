@@ -39,7 +39,7 @@ func (s userService) FindAll(ctx context.Context, req userRequest.FindAllRequest
 	if err != nil {
 		return []userResponse.User{}, err
 	}
-	resp := userResponse.FromDBUsers(users)
+	resp := userResponse.FromDBList(users)
 	return resp, nil
 }
 
@@ -53,6 +53,6 @@ func (s userService) FindById(ctx context.Context, req request.IDRequest) (userR
 	if err != nil {
 		return userResponse.User{}, err
 	}
-	resp := userResponse.FromDBUser(user)
+	resp := userResponse.FromDB(user)
 	return resp, nil
 }

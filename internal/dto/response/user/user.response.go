@@ -12,7 +12,7 @@ type User struct {
 	Email    string    `json:"email"`
 }
 
-func FromDBUser(user db.User) User {
+func FromDB(user db.User) User {
 	return User{
 		ID:       user.ID,
 		Username: user.Username,
@@ -20,10 +20,10 @@ func FromDBUser(user db.User) User {
 	}
 }
 
-func FromDBUsers(users []db.User) []User {
+func FromDBList(users []db.User) []User {
 	var userDTOs []User
 	for _, user := range users {
-		userDTOs = append(userDTOs, FromDBUser(user))
+		userDTOs = append(userDTOs, FromDB(user))
 	}
 	return userDTOs
 }

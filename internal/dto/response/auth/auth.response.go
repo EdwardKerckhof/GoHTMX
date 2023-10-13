@@ -12,7 +12,7 @@ type Auth struct {
 	Email    string    `json:"email"`
 }
 
-func FromDBAuth(auth db.User) Auth {
+func FromDB(auth db.User) Auth {
 	return Auth{
 		ID:       auth.ID,
 		Username: auth.Username,

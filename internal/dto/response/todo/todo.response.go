@@ -12,7 +12,7 @@ type Todo struct {
 	Completed bool      `json:"completed"`
 }
 
-func FromDBTodo(todo db.Todo) Todo {
+func FromDB(todo db.Todo) Todo {
 	return Todo{
 		ID:        todo.ID,
 		Title:     todo.Title,
@@ -20,10 +20,10 @@ func FromDBTodo(todo db.Todo) Todo {
 	}
 }
 
-func FromDBTodos(todos []db.Todo) []Todo {
+func FromDBList(todos []db.Todo) []Todo {
 	var todoDTOs []Todo
 	for _, todo := range todos {
-		todoDTOs = append(todoDTOs, FromDBTodo(todo))
+		todoDTOs = append(todoDTOs, FromDB(todo))
 	}
 	return todoDTOs
 }
