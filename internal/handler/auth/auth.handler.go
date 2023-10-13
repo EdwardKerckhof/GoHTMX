@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 
 	authRequest "github.com/EdwardKerckhof/gohtmx/internal/dto/request/auth"
-	"github.com/EdwardKerckhof/gohtmx/internal/dto/response"
 	authService "github.com/EdwardKerckhof/gohtmx/internal/service/auth"
+	"github.com/EdwardKerckhof/gohtmx/pkg/response"
 )
 
 const (

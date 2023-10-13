@@ -1,6 +1,6 @@
 package todo
 
-import "github.com/EdwardKerckhof/gohtmx/internal/dto/request"
+import "github.com/EdwardKerckhof/gohtmx/pkg/request"
 
 type FindAllRequest struct {
 	request.PaginationRequest

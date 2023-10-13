@@ -3,11 +3,12 @@ package user
 import (
 	"net/http"
 
-	"github.com/EdwardKerckhof/gohtmx/internal/dto/request"
-	userReq "github.com/EdwardKerckhof/gohtmx/internal/dto/request/user"
-	"github.com/EdwardKerckhof/gohtmx/internal/dto/response"
-	userService "github.com/EdwardKerckhof/gohtmx/internal/service/user"
 	"github.com/gin-gonic/gin"
+
+	userReq "github.com/EdwardKerckhof/gohtmx/internal/dto/request/user"
+	userService "github.com/EdwardKerckhof/gohtmx/internal/service/user"
+	"github.com/EdwardKerckhof/gohtmx/pkg/request"
+	"github.com/EdwardKerckhof/gohtmx/pkg/response"
 )
 
 const (

@@ -6,17 +6,17 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/EdwardKerckhof/gohtmx/internal/db"
-	"github.com/EdwardKerckhof/gohtmx/internal/dto/request"
 	todoRequest "github.com/EdwardKerckhof/gohtmx/internal/dto/request/todo"
-	todoResponse "github.com/EdwardKerckhof/gohtmx/internal/dto/response/todo"
+	todoModel "github.com/EdwardKerckhof/gohtmx/internal/model/todo"
+	"github.com/EdwardKerckhof/gohtmx/pkg/request"
 )
 
 type Service interface {
 	Count(ctx context.Context) (int64, error)
-	FindAll(ctx context.Context, req todoRequest.FindAllRequest) ([]todoResponse.Todo, error)
-	FindById(ctx context.Context, req request.IDRequest) (todoResponse.Todo, error)
-	Create(ctx context.Context, req todoRequest.CreateRequest) (todoResponse.Todo, error)
-	Update(ctx context.Context, idReq request.IDRequest, req todoRequest.UpdateRequest) (todoResponse.Todo, error)
+	FindAll(ctx context.Context, req todoRequest.FindAllRequest) ([]todoModel.Todo, error)
+	FindById(ctx context.Context, req request.IDRequest) (todoModel.Todo, error)
+	Create(ctx context.Context, req todoRequest.CreateRequest) (todoModel.Todo, error)
+	Update(ctx context.Context, idReq request.IDRequest, req todoRequest.UpdateRequest) (todoModel.Todo, error)
 	Delete(ctx context.Context, req request.IDRequest) error
 }
 
@@ -34,7 +34,7 @@ func (s todoService) Count(ctx context.Context) (int64, error) {
 	return s.store.CountTodos(ctx)
 }
 
-func (s todoService) FindAll(ctx context.Context, req todoRequest.FindAllRequest) ([]todoResponse.Todo, error) {
+func (s todoService) FindAll(ctx context.Context, req todoRequest.FindAllRequest) ([]todoModel.Todo, error) {
 	arg := db.FindAllTodosParams{
 		Limit:  req.Size,
 		Offset: (req.Page - 1) * req.Size,
@@ -42,25 +42,25 @@ func (s todoService) FindAll(ctx context.Context, req todoRequest.FindAllRequest
 
 	todos, err := s.store.FindAllTodos(ctx, arg)
 	if err != nil {
-		return []todoResponse.Todo{}, err
+		return []todoModel.Todo{}, err
 	}
-	return todoResponse.FromDBTodos(todos), nil
+	return todoModel.FromDBList(todos), nil
 }
 
-func (s todoService) FindById(ctx context.Context, req request.IDRequest) (todoResponse.Todo, error) {
+func (s todoService) FindById(ctx context.Context, req request.IDRequest) (todoModel.Todo, error) {
 	id, err := req.ParseID()
 	if err != nil {
-		return todoResponse.Todo{}, err
+		return todoModel.Todo{}, err
 	}
 
 	todo, err := s.store.FindTodoById(ctx, id)
 	if err != nil {
-		return todoResponse.Todo{}, err
+		return todoModel.Todo{}, err
 	}
-	return todoResponse.FromDBTodo(todo), nil
+	return todoModel.FromDB(todo), nil
 }
 
-func (s todoService) Create(ctx context.Context, req todoRequest.CreateRequest) (todoResponse.Todo, error) {
+func (s todoService) Create(ctx context.Context, req todoRequest.CreateRequest) (todoModel.Todo, error) {
 	arg := db.CreateTodoParams{
 		Title:  req.Title,
 		UserID: uuid.New(), // TODO: Get user from context
@@ -68,15 +68,15 @@ func (s todoService) Create(ctx context.Context, req todoRequest.CreateRequest) 
 
 	todo, err := s.store.CreateTodo(ctx, arg)
 	if err != nil {
-		return todoResponse.Todo{}, err
+		return todoModel.Todo{}, err
 	}
-	return todoResponse.FromDBTodo(todo), nil
+	return todoModel.FromDB(todo), nil
 }
 
-func (s todoService) Update(ctx context.Context, idReq request.IDRequest, req todoRequest.UpdateRequest) (todoResponse.Todo, error) {
+func (s todoService) Update(ctx context.Context, idReq request.IDRequest, req todoRequest.UpdateRequest) (todoModel.Todo, error) {
 	id, err := idReq.ParseID()
 	if err != nil {
-		return todoResponse.Todo{}, err
+		return todoModel.Todo{}, err
 	}
 
 	arg := db.UpdateTodoParams{
@@ -86,9 +86,9 @@ func (s todoService) Update(ctx context.Context, idReq request.IDRequest, req to
 	}
 	todo, err := s.store.UpdateTodo(ctx, arg)
 	if err != nil {
-		return todoResponse.Todo{}, err
+		return todoModel.Todo{}, err
 	}
-	return todoResponse.FromDBTodo(todo), nil
+	return todoModel.FromDB(todo), nil
 }
 
 func (s todoService) Delete(ctx context.Context, req request.IDRequest) error {

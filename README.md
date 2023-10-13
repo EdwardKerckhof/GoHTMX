@@ -4,7 +4,7 @@
 
 ### API
 
-- [x] Pagination
+- [ ] Pagination (check ARTA)
 - [ ] Filtering
 - [ ] Sorting
 - [x] Requests
@@ -18,6 +18,8 @@
 - [ ] Taskfile
 - [ ] Docker (dev and prod)
 - [ ] JWT Auth
+- [ ] Google Auth
+- [ ] Github Auth
 - [ ] CORS
 - [ ] Rate limiting
 - [x] Logging

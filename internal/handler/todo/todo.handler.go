@@ -5,10 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/EdwardKerckhof/gohtmx/internal/dto/request"
 	todoRequest "github.com/EdwardKerckhof/gohtmx/internal/dto/request/todo"
-	"github.com/EdwardKerckhof/gohtmx/internal/dto/response"
 	todoService "github.com/EdwardKerckhof/gohtmx/internal/service/todo"
+	"github.com/EdwardKerckhof/gohtmx/pkg/request"
+	"github.com/EdwardKerckhof/gohtmx/pkg/response"
 )
 
 const (
