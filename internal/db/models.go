@@ -8,24 +8,25 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Todo struct {
-	ID        uuid.UUID  `json:"id"`
-	Title     string     `json:"title"`
-	Completed bool       `json:"completed"`
-	UserID    uuid.UUID  `json:"userId"`
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
-	DeletedAt *time.Time `json:"deletedAt"`
+	ID        uuid.UUID          `json:"id"`
+	Title     string             `json:"title"`
+	Completed bool               `json:"completed"`
+	UserID    uuid.UUID          `json:"userId"`
+	CreatedAt time.Time          `json:"createdAt"`
+	UpdatedAt time.Time          `json:"updatedAt"`
+	DeletedAt pgtype.Timestamptz `json:"deletedAt"`
 }
 
 type User struct {
-	ID        uuid.UUID  `json:"id"`
-	Username  string     `json:"username"`
-	Email     string     `json:"email"`
-	Password  string     `json:"password"`
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
-	DeletedAt *time.Time `json:"deletedAt"`
+	ID        uuid.UUID          `json:"id"`
+	Username  string             `json:"username"`
+	Email     string             `json:"email"`
+	Password  string             `json:"password"`
+	CreatedAt time.Time          `json:"createdAt"`
+	UpdatedAt time.Time          `json:"updatedAt"`
+	DeletedAt pgtype.Timestamptz `json:"deletedAt"`
 }

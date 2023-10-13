@@ -5,12 +5,12 @@ import (
 
 	"github.com/EdwardKerckhof/gohtmx/internal/db"
 	authRequest "github.com/EdwardKerckhof/gohtmx/internal/dto/request/auth"
-	userModel "github.com/EdwardKerckhof/gohtmx/internal/model/user"
+	authResponse "github.com/EdwardKerckhof/gohtmx/internal/dto/response/auth"
 )
 
 type Service interface {
-	Register(ctx context.Context, req authRequest.RegisterRequest) (userModel.User, error)
-	Login(ctx context.Context, req authRequest.LoginRequest) (userModel.User, error)
+	Register(ctx context.Context, req authRequest.RegisterRequest) (authResponse.Auth, error)
+	Login(ctx context.Context, req authRequest.LoginRequest) (authResponse.Auth, error)
 }
 
 type authService struct {
@@ -23,10 +23,10 @@ func New(store db.Store) Service {
 	}
 }
 
-func (s authService) Register(ctx context.Context, req authRequest.RegisterRequest) (userModel.User, error) {
+func (s authService) Register(ctx context.Context, req authRequest.RegisterRequest) (authResponse.Auth, error) {
 	hashedPassword, err := req.HashPassword()
 	if err != nil {
-		return userModel.User{}, err
+		return authResponse.Auth{}, err
 	}
 
 	arg := db.CreateUserParams{
@@ -36,11 +36,11 @@ func (s authService) Register(ctx context.Context, req authRequest.RegisterReque
 	}
 	user, err := s.store.CreateUser(ctx, arg)
 	if err != nil {
-		return userModel.User{}, err
+		return authResponse.Auth{}, err
 	}
-	return userModel.FromDB(user), nil
+	return authResponse.FromDBAuth(user), nil
 }
 
-func (s authService) Login(ctx context.Context, req authRequest.LoginRequest) (userModel.User, error) {
+func (s authService) Login(ctx context.Context, req authRequest.LoginRequest) (authResponse.Auth, error) {
 	panic("unimplemented")
 }

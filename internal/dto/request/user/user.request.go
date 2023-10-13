@@ -1,6 +1,6 @@
 package user
 
-import "github.com/EdwardKerckhof/gohtmx/pkg/request"
+import "github.com/EdwardKerckhof/gohtmx/internal/dto/request"
 
 type FindAllRequest struct {
 	request.PaginationRequest

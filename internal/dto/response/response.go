@@ -1,6 +1,6 @@
 package response
 
-import "github.com/EdwardKerckhof/gohtmx/pkg/request"
+import "github.com/EdwardKerckhof/gohtmx/internal/dto/request"
 
 type successResponse struct {
 	Success bool        `json:"success"`
