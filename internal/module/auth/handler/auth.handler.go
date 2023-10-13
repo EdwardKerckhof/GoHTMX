@@ -1,34 +1,34 @@
-package auth
+package handler
 
 import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
-	authRequest "github.com/EdwardKerckhof/gohtmx/internal/dto/request/auth"
-	"github.com/EdwardKerckhof/gohtmx/internal/dto/response"
-	authService "github.com/EdwardKerckhof/gohtmx/internal/service/auth"
+	"github.com/EdwardKerckhof/gohtmx/internal/module/auth/dto"
+	"github.com/EdwardKerckhof/gohtmx/internal/module/auth/service"
+	"github.com/EdwardKerckhof/gohtmx/pkg/response"
 )
 
 const (
 	prefix = "/auth"
 )
 
-type handler interface {
+type Handler interface {
 	RegisterRoutes()
 	Register(ctx *gin.Context)
 	Login(ctx *gin.Context)
 }
 
 type authHandler struct {
+	service   service.Service
 	apiRouter *gin.RouterGroup
-	service   authService.Service
 }
 
-func New(apiRouter *gin.RouterGroup, authService authService.Service) handler {
+func New(authService service.Service, apiRouter *gin.RouterGroup) Handler {
 	return &authHandler{
-		apiRouter: apiRouter,
 		service:   authService,
+		apiRouter: apiRouter,
 	}
 }
 
@@ -40,7 +40,7 @@ func (h *authHandler) RegisterRoutes() {
 }
 
 func (h *authHandler) Register(ctx *gin.Context) {
-	var req authRequest.RegisterRequest
+	var req dto.RegisterRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
 		return

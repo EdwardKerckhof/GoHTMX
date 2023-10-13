@@ -1,4 +1,4 @@
-package auth
+package dto
 
 import (
 	"github.com/google/uuid"
@@ -6,16 +6,16 @@ import (
 	"github.com/EdwardKerckhof/gohtmx/internal/db"
 )
 
-type Auth struct {
+type Response struct {
 	ID       uuid.UUID `json:"id"`
 	Username string    `json:"username"`
 	Email    string    `json:"email"`
 }
 
-func FromDB(auth db.User) Auth {
-	return Auth{
-		ID:       auth.ID,
-		Username: auth.Username,
-		Email:    auth.Email,
+func FromDB(dbAuth db.User) Response {
+	return Response{
+		ID:       dbAuth.ID,
+		Username: dbAuth.Username,
+		Email:    dbAuth.Email,
 	}
 }

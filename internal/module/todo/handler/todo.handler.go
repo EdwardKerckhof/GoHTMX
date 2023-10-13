@@ -1,21 +1,21 @@
-package todo
+package handler
 
 import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/EdwardKerckhof/gohtmx/internal/dto/request"
-	todoRequest "github.com/EdwardKerckhof/gohtmx/internal/dto/request/todo"
-	"github.com/EdwardKerckhof/gohtmx/internal/dto/response"
-	todoService "github.com/EdwardKerckhof/gohtmx/internal/service/todo"
+	"github.com/EdwardKerckhof/gohtmx/internal/module/todo/dto"
+	"github.com/EdwardKerckhof/gohtmx/internal/module/todo/service"
+	"github.com/EdwardKerckhof/gohtmx/pkg/request"
+	"github.com/EdwardKerckhof/gohtmx/pkg/response"
 )
 
 const (
 	prefix = "/todos"
 )
 
-type handler interface {
+type Handler interface {
 	RegisterRoutes()
 	FindAll(ctx *gin.Context)
 	FindById(ctx *gin.Context)
@@ -24,16 +24,15 @@ type handler interface {
 	Delete(ctx *gin.Context)
 }
 
-// TODO: use service instead of store
 type todoHandler struct {
+	service   service.Service
 	apiRouter *gin.RouterGroup
-	service   todoService.Service
 }
 
-func New(apiRouter *gin.RouterGroup, service todoService.Service) handler {
+func New(service service.Service, apiRouter *gin.RouterGroup) Handler {
 	return &todoHandler{
-		apiRouter: apiRouter,
 		service:   service,
+		apiRouter: apiRouter,
 	}
 }
 
@@ -48,7 +47,7 @@ func (h *todoHandler) RegisterRoutes() {
 }
 
 func (c *todoHandler) FindAll(ctx *gin.Context) {
-	var req todoRequest.FindAllRequest
+	var req dto.FindAllRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
 		return
@@ -87,7 +86,7 @@ func (c *todoHandler) FindById(ctx *gin.Context) {
 }
 
 func (c *todoHandler) Create(ctx *gin.Context) {
-	var req todoRequest.CreateRequest
+	var req dto.CreateRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
 		return
@@ -103,7 +102,7 @@ func (c *todoHandler) Create(ctx *gin.Context) {
 }
 
 func (c *todoHandler) Update(ctx *gin.Context) {
-	var req todoRequest.UpdateRequest
+	var req dto.UpdateRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
 		return

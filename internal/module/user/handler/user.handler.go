@@ -1,34 +1,35 @@
-package user
+package handler
 
 import (
 	"net/http"
 
-	"github.com/EdwardKerckhof/gohtmx/internal/dto/request"
-	userReq "github.com/EdwardKerckhof/gohtmx/internal/dto/request/user"
-	"github.com/EdwardKerckhof/gohtmx/internal/dto/response"
-	userService "github.com/EdwardKerckhof/gohtmx/internal/service/user"
 	"github.com/gin-gonic/gin"
+
+	"github.com/EdwardKerckhof/gohtmx/internal/module/user/dto"
+	"github.com/EdwardKerckhof/gohtmx/internal/module/user/service"
+	"github.com/EdwardKerckhof/gohtmx/pkg/request"
+	"github.com/EdwardKerckhof/gohtmx/pkg/response"
 )
 
 const (
 	prefix = "/users"
 )
 
-type handler interface {
+type Handler interface {
 	RegisterRoutes()
 	FindAll(ctx *gin.Context)
 	FindById(ctx *gin.Context)
 }
 
 type userHandler struct {
+	service   service.Service
 	apiRouter *gin.RouterGroup
-	service   userService.Service
 }
 
-func New(apiRouter *gin.RouterGroup, service userService.Service) handler {
+func New(service service.Service, apiRouter *gin.RouterGroup) Handler {
 	return &userHandler{
-		apiRouter: apiRouter,
 		service:   service,
+		apiRouter: apiRouter,
 	}
 }
 
@@ -40,7 +41,7 @@ func (h *userHandler) RegisterRoutes() {
 }
 
 func (h *userHandler) FindAll(ctx *gin.Context) {
-	var req userReq.FindAllRequest
+	var req dto.FindAllRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, response.Error(err))
 		return

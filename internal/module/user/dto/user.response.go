@@ -1,4 +1,4 @@
-package user
+package dto
 
 import (
 	"github.com/google/uuid"
@@ -6,22 +6,22 @@ import (
 	"github.com/EdwardKerckhof/gohtmx/internal/db"
 )
 
-type User struct {
+type Response struct {
 	ID       uuid.UUID `json:"id"`
 	Username string    `json:"username"`
 	Email    string    `json:"email"`
 }
 
-func FromDB(user db.User) User {
-	return User{
+func FromDB(user db.User) Response {
+	return Response{
 		ID:       user.ID,
 		Username: user.Username,
 		Email:    user.Email,
 	}
 }
 
-func FromDBList(users []db.User) []User {
-	var userDTOs []User
+func FromDBList(users []db.User) []Response {
+	var userDTOs []Response
 	for _, user := range users {
 		userDTOs = append(userDTOs, FromDB(user))
 	}

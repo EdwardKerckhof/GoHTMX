@@ -8,9 +8,14 @@ import (
 
 	"github.com/EdwardKerckhof/gohtmx/config"
 	"github.com/EdwardKerckhof/gohtmx/internal/db"
+	"github.com/EdwardKerckhof/gohtmx/internal/module"
 	"github.com/EdwardKerckhof/gohtmx/internal/router"
 	"github.com/EdwardKerckhof/gohtmx/internal/server"
 	"github.com/EdwardKerckhof/gohtmx/pkg/logger"
+)
+
+const (
+	apiBasePath = "/api/v1"
 )
 
 func main() {
@@ -25,12 +30,16 @@ func main() {
 	logger.InitLogger()
 	logger.Infof("AppVersion: %s, LogLevel: %s, Mode: %s", config.Api.Version, config.Logger.Level, config.Api.Mode)
 
+	// Create a new router
+	router := router.New()
+	apiRouter := router.Group(apiBasePath)
+
 	// Create a new store instance
 	store := db.NewStore(config, logger)
 	defer store.Close()
 
-	// Create a new router router
-	router := router.New(store)
+	// Init modules
+	module.InitModules(store, apiRouter)
 
 	// Create a new server instance
 	server := server.New(router, config, logger)
