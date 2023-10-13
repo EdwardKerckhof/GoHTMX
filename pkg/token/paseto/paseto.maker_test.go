@@ -1,18 +1,17 @@
-package jwt
+package paseto
 
 import (
 	"testing"
 	"time"
 
-	"github.com/golang-jwt/jwt"
 	"github.com/stretchr/testify/require"
 
 	"github.com/EdwardKerckhof/gohtmx/pkg/token"
 )
 
-func TestJWTMaker(t *testing.T) {
+func TestPasetoMaker(t *testing.T) {
 	secret := "12345678901234567890123456789012"
-	maker, err := NewJWTMaker(secret)
+	maker, err := NewPasetoMaker(secret)
 	require.NoError(t, err)
 
 	username := "test"
@@ -35,9 +34,9 @@ func TestJWTMaker(t *testing.T) {
 	require.WithinDuration(t, expiredAt, payload.ExpiredAt, time.Second)
 }
 
-func TestExpiredJWT(t *testing.T) {
+func TestExpiredPaseto(t *testing.T) {
 	secret := "12345678901234567890123456789012"
-	maker, err := NewJWTMaker(secret)
+	maker, err := NewPasetoMaker(secret)
 	require.NoError(t, err)
 
 	username := "test"
@@ -48,21 +47,5 @@ func TestExpiredJWT(t *testing.T) {
 	payload, err := maker.VerifyToken(jwt)
 	require.Error(t, err)
 	require.EqualError(t, err, token.ErrExpiredToken.Error())
-	require.Nil(t, payload)
-}
-
-func TextInvalidJWTAlgNone(t *testing.T) {
-	payload := token.NewPayload("test", time.Minute)
-	jwtToken := jwt.NewWithClaims(jwt.SigningMethodNone, payload)
-	tok, err := jwtToken.SignedString(jwt.UnsafeAllowNoneSignatureType)
-	require.NoError(t, err)
-
-	secret := "12345678901234567890123456789012"
-	maker, err := NewJWTMaker(secret)
-	require.NoError(t, err)
-
-	payload, err = maker.VerifyToken(tok)
-	require.Error(t, err)
-	require.EqualError(t, err, token.ErrInvalidToken.Error())
 	require.Nil(t, payload)
 }
