@@ -13,6 +13,7 @@ import (
 type Service interface {
 	Count(ctx context.Context) (int64, error)
 	FindAll(ctx context.Context, req dto.FindAllRequest) ([]dto.Response, error)
+	FindAllWithCount(ctx context.Context, req dto.FindAllRequest) ([]dto.Response, int64, error)
 	FindById(ctx context.Context, req request.IDRequest) (dto.Response, error)
 	Create(ctx context.Context, req dto.CreateRequest) (dto.Response, error)
 	Update(ctx context.Context, idReq request.IDRequest, req dto.UpdateRequest) (dto.Response, error)
@@ -46,6 +47,18 @@ func (s todoService) FindAll(ctx context.Context, req dto.FindAllRequest) ([]dto
 	return dto.FromDBList(todos), nil
 }
 
+func (s todoService) FindAllWithCount(ctx context.Context, req dto.FindAllRequest) ([]dto.Response, int64, error) {
+	todos, err := s.FindAll(ctx, req)
+	if err != nil {
+		return []dto.Response{}, 0, err
+	}
+
+	count, err := s.Count(ctx)
+	if err != nil {
+		return []dto.Response{}, 0, err
+	}
+	return todos, count, nil
+}
 func (s todoService) FindById(ctx context.Context, req request.IDRequest) (dto.Response, error) {
 	id, err := req.ParseID()
 	if err != nil {

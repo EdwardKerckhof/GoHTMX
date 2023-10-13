@@ -47,19 +47,13 @@ func (h *userHandler) FindAll(ctx *gin.Context) {
 		return
 	}
 
-	users, err := h.service.FindAll(ctx, req)
+	users, count, err := h.service.FindAllWithCount(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, response.Error(err))
 		return
 	}
 
-	usersCount, err := h.service.Count(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, response.Error(err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, response.Paginated(users, usersCount, req.PaginationRequest))
+	ctx.JSON(http.StatusOK, response.Paginated(users, count, req.PaginationRequest))
 }
 
 func (h *userHandler) FindById(ctx *gin.Context) {

@@ -53,19 +53,13 @@ func (c *todoHandler) FindAll(ctx *gin.Context) {
 		return
 	}
 
-	todos, err := c.service.FindAll(ctx, req)
+	todos, count, err := c.service.FindAllWithCount(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, response.Error(err))
 		return
 	}
 
-	todosCount, err := c.service.Count(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, response.Error(err))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, response.Paginated(todos, todosCount, req.PaginationRequest))
+	ctx.JSON(http.StatusOK, response.Paginated(todos, count, req.PaginationRequest))
 }
 
 func (c *todoHandler) FindById(ctx *gin.Context) {

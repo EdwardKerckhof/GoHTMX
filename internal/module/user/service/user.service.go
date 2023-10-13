@@ -11,6 +11,7 @@ import (
 type Service interface {
 	Count(ctx context.Context) (int64, error)
 	FindAll(ctx context.Context, req dto.FindAllRequest) ([]dto.Response, error)
+	FindAllWithCount(ctx context.Context, req dto.FindAllRequest) ([]dto.Response, int64, error)
 	FindById(ctx context.Context, id request.IDRequest) (dto.Response, error)
 }
 
@@ -38,8 +39,20 @@ func (s userService) FindAll(ctx context.Context, req dto.FindAllRequest) ([]dto
 	if err != nil {
 		return []dto.Response{}, err
 	}
-	resp := dto.FromDBList(users)
-	return resp, nil
+	return dto.FromDBList(users), nil
+}
+
+func (s userService) FindAllWithCount(ctx context.Context, req dto.FindAllRequest) ([]dto.Response, int64, error) {
+	users, err := s.FindAll(ctx, req)
+	if err != nil {
+		return []dto.Response{}, 0, err
+	}
+
+	count, err := s.Count(ctx)
+	if err != nil {
+		return []dto.Response{}, 0, err
+	}
+	return users, count, nil
 }
 
 func (s userService) FindById(ctx context.Context, req request.IDRequest) (dto.Response, error) {
