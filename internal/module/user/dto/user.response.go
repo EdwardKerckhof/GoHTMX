@@ -12,7 +12,7 @@ type Response struct {
 	Email    string    `json:"email"`
 }
 
-func FromDB(user db.User) Response {
+func NewResponse(user db.User) Response {
 	return Response{
 		ID:       user.ID,
 		Username: user.Username,
@@ -20,10 +20,10 @@ func FromDB(user db.User) Response {
 	}
 }
 
-func FromDBList(users []db.User) []Response {
+func NewResponseList(users []db.User) []Response {
 	var userDTOs []Response
 	for _, user := range users {
-		userDTOs = append(userDTOs, FromDB(user))
+		userDTOs = append(userDTOs, NewResponse(user))
 	}
 	return userDTOs
 }

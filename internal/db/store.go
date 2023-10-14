@@ -16,7 +16,7 @@ type Store struct {
 	db *pgx.Conn
 }
 
-func NewStore(config *config.Config, logger logger.Logger) Store {
+func NewStore(config config.Config, logger logger.Logger) Store {
 	dbURL := formatDatabaseURL(config)
 	conn, err := pgx.Connect(context.Background(), dbURL)
 	if err != nil {
@@ -34,7 +34,7 @@ func (s *Store) Close() {
 	s.db.Close(context.Background())
 }
 
-func formatDatabaseURL(config *config.Config) string {
+func formatDatabaseURL(config config.Config) string {
 	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		config.Db.Host,
 		config.Db.Port,

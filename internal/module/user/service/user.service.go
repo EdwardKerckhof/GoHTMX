@@ -39,7 +39,7 @@ func (s userService) FindAll(ctx context.Context, req dto.FindAllRequest) ([]dto
 	if err != nil {
 		return []dto.Response{}, err
 	}
-	return dto.FromDBList(users), nil
+	return dto.NewResponseList(users), nil
 }
 
 func (s userService) FindAllWithCount(ctx context.Context, req dto.FindAllRequest) ([]dto.Response, int64, error) {
@@ -65,6 +65,6 @@ func (s userService) FindById(ctx context.Context, req request.IDRequest) (dto.R
 	if err != nil {
 		return dto.Response{}, err
 	}
-	resp := dto.FromDB(user)
+	resp := dto.NewResponse(user)
 	return resp, nil
 }

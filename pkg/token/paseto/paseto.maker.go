@@ -15,7 +15,7 @@ type PasetoMaker struct {
 	symmetricKey []byte
 }
 
-func NewPasetoMaker(symmetricKey string) (token.Maker, error) {
+func NewMaker(symmetricKey string) (token.Maker, error) {
 	if len(symmetricKey) != chacha20poly1305.KeySize {
 		return nil, fmt.Errorf("invalid key size: must be %d characters", chacha20poly1305.KeySize)
 	}

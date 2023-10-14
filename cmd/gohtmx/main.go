@@ -39,7 +39,10 @@ func main() {
 	defer store.Close()
 
 	// Init modules
-	module.InitModules(store, apiRouter)
+	err = module.InitModules(config, store, apiRouter)
+	if err != nil {
+		log.Fatalf("error initializing modules: %s", err.Error())
+	}
 
 	// Create a new server instance
 	server := server.New(router, config, logger)

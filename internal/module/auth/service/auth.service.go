@@ -3,22 +3,28 @@ package service
 import (
 	"context"
 
+	"github.com/EdwardKerckhof/gohtmx/config"
 	"github.com/EdwardKerckhof/gohtmx/internal/db"
 	"github.com/EdwardKerckhof/gohtmx/internal/module/auth/dto"
+	"github.com/EdwardKerckhof/gohtmx/pkg/token"
 )
 
 type Service interface {
 	Register(ctx context.Context, req dto.RegisterRequest) (dto.Response, error)
-	Login(ctx context.Context, req dto.LoginRequest) (dto.Response, error)
+	Login(ctx context.Context, req dto.LoginRequest) (dto.LoginResponse, error)
 }
 
 type authService struct {
-	store db.Store
+	config     config.Config
+	store      db.Store
+	tokenMaker token.Maker
 }
 
-func New(store db.Store) Service {
+func New(config config.Config, store db.Store, tokenMaker token.Maker) Service {
 	return authService{
-		store: store,
+		config:     config,
+		store:      store,
+		tokenMaker: tokenMaker,
 	}
 }
 
@@ -37,9 +43,23 @@ func (s authService) Register(ctx context.Context, req dto.RegisterRequest) (dto
 	if err != nil {
 		return dto.Response{}, err
 	}
-	return dto.FromDB(user), nil
+	return dto.NewResponse(user), nil
 }
 
-func (s authService) Login(ctx context.Context, req dto.LoginRequest) (dto.Response, error) {
-	panic("unimplemented")
+func (s authService) Login(ctx context.Context, req dto.LoginRequest) (dto.LoginResponse, error) {
+	user, err := s.store.FindUserByUsername(ctx, req.Username)
+	if err != nil {
+		return dto.LoginResponse{}, err
+	}
+
+	if err := req.ComparePassword(user.Password); err != nil {
+		return dto.LoginResponse{}, err
+	}
+
+	accessToken, err := s.tokenMaker.GenerateToken(user.Username, s.config.Auth.AccessTokenExpiration)
+	if err != nil {
+		return dto.LoginResponse{}, err
+	}
+
+	return dto.NewLoginResponse(accessToken, user), nil
 }

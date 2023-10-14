@@ -11,7 +11,7 @@ import (
 
 func TestPasetoMaker(t *testing.T) {
 	secret := "12345678901234567890123456789012"
-	maker, err := NewPasetoMaker(secret)
+	maker, err := NewMaker(secret)
 	require.NoError(t, err)
 
 	username := "test"
@@ -36,7 +36,7 @@ func TestPasetoMaker(t *testing.T) {
 
 func TestExpiredPaseto(t *testing.T) {
 	secret := "12345678901234567890123456789012"
-	maker, err := NewPasetoMaker(secret)
+	maker, err := NewMaker(secret)
 	require.NoError(t, err)
 
 	username := "test"

@@ -44,7 +44,7 @@ func (s todoService) FindAll(ctx context.Context, req dto.FindAllRequest) ([]dto
 	if err != nil {
 		return []dto.Response{}, err
 	}
-	return dto.FromDBList(todos), nil
+	return dto.NewResponseList(todos), nil
 }
 
 func (s todoService) FindAllWithCount(ctx context.Context, req dto.FindAllRequest) ([]dto.Response, int64, error) {
@@ -69,7 +69,7 @@ func (s todoService) FindById(ctx context.Context, req request.IDRequest) (dto.R
 	if err != nil {
 		return dto.Response{}, err
 	}
-	return dto.FromDB(todo), nil
+	return dto.NewResponse(todo), nil
 }
 
 func (s todoService) Create(ctx context.Context, req dto.CreateRequest) (dto.Response, error) {
@@ -82,7 +82,7 @@ func (s todoService) Create(ctx context.Context, req dto.CreateRequest) (dto.Res
 	if err != nil {
 		return dto.Response{}, err
 	}
-	return dto.FromDB(todo), nil
+	return dto.NewResponse(todo), nil
 }
 
 func (s todoService) Update(ctx context.Context, idReq request.IDRequest, req dto.UpdateRequest) (dto.Response, error) {
@@ -100,7 +100,7 @@ func (s todoService) Update(ctx context.Context, idReq request.IDRequest, req dt
 	if err != nil {
 		return dto.Response{}, err
 	}
-	return dto.FromDB(todo), nil
+	return dto.NewResponse(todo), nil
 }
 
 func (s todoService) Delete(ctx context.Context, req request.IDRequest) error {

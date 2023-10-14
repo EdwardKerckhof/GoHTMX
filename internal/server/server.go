@@ -21,7 +21,7 @@ type serverImpl interface {
 	Stop()
 }
 
-func New(router *gin.Engine, config *config.Config, logger logger.Logger) serverImpl {
+func New(router *gin.Engine, config config.Config, logger logger.Logger) serverImpl {
 	return &Server{
 		logger: logger,
 		server: &http.Server{

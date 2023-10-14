@@ -12,7 +12,7 @@ import (
 
 func TestJWTMaker(t *testing.T) {
 	secret := "12345678901234567890123456789012"
-	maker, err := NewJWTMaker(secret)
+	maker, err := NewMaker(secret)
 	require.NoError(t, err)
 
 	username := "test"
@@ -37,7 +37,7 @@ func TestJWTMaker(t *testing.T) {
 
 func TestExpiredJWT(t *testing.T) {
 	secret := "12345678901234567890123456789012"
-	maker, err := NewJWTMaker(secret)
+	maker, err := NewMaker(secret)
 	require.NoError(t, err)
 
 	username := "test"
@@ -58,7 +58,7 @@ func TextInvalidJWTAlgNone(t *testing.T) {
 	require.NoError(t, err)
 
 	secret := "12345678901234567890123456789012"
-	maker, err := NewJWTMaker(secret)
+	maker, err := NewMaker(secret)
 	require.NoError(t, err)
 
 	payload, err = maker.VerifyToken(tok)

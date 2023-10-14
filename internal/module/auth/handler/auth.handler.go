@@ -46,16 +46,29 @@ func (h *authHandler) Register(ctx *gin.Context) {
 		return
 	}
 
-	user, err := h.service.Register(ctx, req)
+	resp, err := h.service.Register(ctx, req)
 	if err != nil {
 		// TODO: better error handling
 		ctx.JSON(http.StatusInternalServerError, response.Error(err))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, response.Success(user))
+	ctx.JSON(http.StatusOK, response.Success(resp))
 }
 
 func (h *authHandler) Login(ctx *gin.Context) {
-	panic("unimplemented")
+	var req dto.LoginRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, response.Error(err))
+		return
+	}
+
+	resp, err := h.service.Login(ctx, req)
+	if err != nil {
+		// TODO: better error handling
+		ctx.JSON(http.StatusInternalServerError, response.Error(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response.Success(resp))
 }

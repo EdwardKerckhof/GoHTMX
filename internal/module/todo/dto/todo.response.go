@@ -12,7 +12,7 @@ type Response struct {
 	Completed bool      `json:"completed"`
 }
 
-func FromDB(dbTodo db.Todo) Response {
+func NewResponse(dbTodo db.Todo) Response {
 	return Response{
 		ID:        dbTodo.ID,
 		Title:     dbTodo.Title,
@@ -20,10 +20,10 @@ func FromDB(dbTodo db.Todo) Response {
 	}
 }
 
-func FromDBList(dbTodos []db.Todo) []Response {
+func NewResponseList(dbTodos []db.Todo) []Response {
 	var todos []Response
 	for _, todo := range dbTodos {
-		todos = append(todos, FromDB(todo))
+		todos = append(todos, NewResponse(todo))
 	}
 	return todos
 }

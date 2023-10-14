@@ -37,11 +37,11 @@ var loggerLevelMap = map[string]zapcore.Level{
 }
 
 type logger struct {
-	config      *config.Config
+	config      config.Config
 	sugarLogger *zap.SugaredLogger
 }
 
-func New(config *config.Config) *logger {
+func New(config config.Config) *logger {
 	return &logger{config: config}
 }
 
@@ -55,7 +55,7 @@ func (l *logger) getLoggerLevel(config *config.Config) zapcore.Level {
 }
 
 func (l *logger) InitLogger() {
-	logLevel := l.getLoggerLevel(l.config)
+	logLevel := l.getLoggerLevel(&l.config)
 
 	logWriter := zapcore.AddSync(os.Stderr)
 

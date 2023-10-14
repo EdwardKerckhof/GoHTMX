@@ -24,3 +24,7 @@ func (r *RegisterRequest) HashPassword() (string, error) {
 	}
 	return string(hash), nil
 }
+
+func (r *LoginRequest) ComparePassword(hashedPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(r.Password))
+}
