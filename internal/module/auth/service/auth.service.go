@@ -56,7 +56,7 @@ func (s authService) Login(ctx context.Context, req dto.LoginRequest) (dto.Login
 		return dto.LoginResponse{}, err
 	}
 
-	accessToken, err := s.tokenMaker.GenerateToken(user.Username, s.config.Auth.AccessTokenExpiration)
+	accessToken, err := s.tokenMaker.GenerateToken(user.ID, s.config.Auth.AccessTokenExpiration)
 	if err != nil {
 		return dto.LoginResponse{}, err
 	}

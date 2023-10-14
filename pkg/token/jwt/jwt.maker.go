@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/EdwardKerckhof/gohtmx/pkg/token"
 	"github.com/golang-jwt/jwt"
+	"github.com/google/uuid"
+
+	"github.com/EdwardKerckhof/gohtmx/pkg/token"
 )
 
 const (
@@ -24,8 +26,8 @@ func NewMaker(secretKey string) (token.Maker, error) {
 	return &JWTMaker{secretKey}, nil
 }
 
-func (m *JWTMaker) GenerateToken(username string, duration time.Duration) (string, error) {
-	payload := token.NewPayload(username, duration)
+func (m *JWTMaker) GenerateToken(userID uuid.UUID, duration time.Duration) (string, error) {
+	payload := token.NewPayload(userID, duration)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
 	return token.SignedString([]byte(m.secretKey))
 }

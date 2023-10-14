@@ -5,10 +5,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/EdwardKerckhof/gohtmx/internal/middleware"
 	"github.com/EdwardKerckhof/gohtmx/internal/module/todo/dto"
 	"github.com/EdwardKerckhof/gohtmx/internal/module/todo/service"
 	"github.com/EdwardKerckhof/gohtmx/pkg/request"
 	"github.com/EdwardKerckhof/gohtmx/pkg/response"
+	"github.com/EdwardKerckhof/gohtmx/pkg/token"
 )
 
 const (
@@ -25,20 +27,22 @@ type Handler interface {
 }
 
 type todoHandler struct {
-	service   service.Service
-	apiRouter *gin.RouterGroup
+	service    service.Service
+	apiRouter  *gin.RouterGroup
+	tokenMaker token.Maker
 }
 
-func New(service service.Service, apiRouter *gin.RouterGroup) Handler {
+func New(service service.Service, apiRouter *gin.RouterGroup, tokenMaker token.Maker) Handler {
 	return &todoHandler{
-		service:   service,
-		apiRouter: apiRouter,
+		service:    service,
+		apiRouter:  apiRouter,
+		tokenMaker: tokenMaker,
 	}
 }
 
 func (h *todoHandler) RegisterRoutes() {
 	// Rest API /api/v1/todos
-	todoRouter := h.apiRouter.Group(prefix)
+	todoRouter := h.apiRouter.Group(prefix).Use(middleware.AuthMiddleware(h.tokenMaker))
 	todoRouter.GET("", h.FindAll)
 	todoRouter.GET("/:id", h.FindById)
 	todoRouter.POST("", h.Create)

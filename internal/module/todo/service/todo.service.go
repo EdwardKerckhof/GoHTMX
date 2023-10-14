@@ -1,23 +1,23 @@
 package service
 
 import (
-	"context"
-
-	"github.com/google/uuid"
+	"github.com/gin-gonic/gin"
 
 	"github.com/EdwardKerckhof/gohtmx/internal/db"
+	"github.com/EdwardKerckhof/gohtmx/internal/middleware"
 	"github.com/EdwardKerckhof/gohtmx/internal/module/todo/dto"
 	"github.com/EdwardKerckhof/gohtmx/pkg/request"
+	"github.com/EdwardKerckhof/gohtmx/pkg/token"
 )
 
 type Service interface {
-	Count(ctx context.Context) (int64, error)
-	FindAll(ctx context.Context, req dto.FindAllRequest) ([]dto.Response, error)
-	FindAllWithCount(ctx context.Context, req dto.FindAllRequest) ([]dto.Response, int64, error)
-	FindById(ctx context.Context, req request.IDRequest) (dto.Response, error)
-	Create(ctx context.Context, req dto.CreateRequest) (dto.Response, error)
-	Update(ctx context.Context, idReq request.IDRequest, req dto.UpdateRequest) (dto.Response, error)
-	Delete(ctx context.Context, req request.IDRequest) error
+	Count(ctx *gin.Context) (int64, error)
+	FindAll(ctx *gin.Context, req dto.FindAllRequest) ([]dto.Response, error)
+	FindAllWithCount(ctx *gin.Context, req dto.FindAllRequest) ([]dto.Response, int64, error)
+	FindById(ctx *gin.Context, req request.IDRequest) (dto.Response, error)
+	Create(ctx *gin.Context, req dto.CreateRequest) (dto.Response, error)
+	Update(ctx *gin.Context, idReq request.IDRequest, req dto.UpdateRequest) (dto.Response, error)
+	Delete(ctx *gin.Context, req request.IDRequest) error
 }
 
 type todoService struct {
@@ -30,12 +30,15 @@ func New(store db.Store) Service {
 	}
 }
 
-func (s todoService) Count(ctx context.Context) (int64, error) {
-	return s.store.CountTodos(ctx)
+func (s todoService) Count(ctx *gin.Context) (int64, error) {
+	authPayload := ctx.MustGet(middleware.PayloadKey).(*token.Payload)
+	return s.store.CountTodos(ctx, authPayload.UserID)
 }
 
-func (s todoService) FindAll(ctx context.Context, req dto.FindAllRequest) ([]dto.Response, error) {
+func (s todoService) FindAll(ctx *gin.Context, req dto.FindAllRequest) ([]dto.Response, error) {
+	authPayload := ctx.MustGet(middleware.PayloadKey).(*token.Payload)
 	arg := db.FindAllTodosParams{
+		UserID: authPayload.UserID,
 		Limit:  req.Size,
 		Offset: (req.Page - 1) * req.Size,
 	}
@@ -47,7 +50,7 @@ func (s todoService) FindAll(ctx context.Context, req dto.FindAllRequest) ([]dto
 	return dto.NewResponseList(todos), nil
 }
 
-func (s todoService) FindAllWithCount(ctx context.Context, req dto.FindAllRequest) ([]dto.Response, int64, error) {
+func (s todoService) FindAllWithCount(ctx *gin.Context, req dto.FindAllRequest) ([]dto.Response, int64, error) {
 	todos, err := s.FindAll(ctx, req)
 	if err != nil {
 		return []dto.Response{}, 0, err
@@ -59,7 +62,8 @@ func (s todoService) FindAllWithCount(ctx context.Context, req dto.FindAllReques
 	}
 	return todos, count, nil
 }
-func (s todoService) FindById(ctx context.Context, req request.IDRequest) (dto.Response, error) {
+
+func (s todoService) FindById(ctx *gin.Context, req request.IDRequest) (dto.Response, error) {
 	id, err := req.ParseID()
 	if err != nil {
 		return dto.Response{}, err
@@ -72,10 +76,11 @@ func (s todoService) FindById(ctx context.Context, req request.IDRequest) (dto.R
 	return dto.NewResponse(todo), nil
 }
 
-func (s todoService) Create(ctx context.Context, req dto.CreateRequest) (dto.Response, error) {
+func (s todoService) Create(ctx *gin.Context, req dto.CreateRequest) (dto.Response, error) {
+	authPayload := ctx.MustGet(middleware.PayloadKey).(*token.Payload)
 	arg := db.CreateTodoParams{
 		Title:  req.Title,
-		UserID: uuid.New(), // TODO: Get user from context
+		UserID: authPayload.UserID,
 	}
 
 	todo, err := s.store.CreateTodo(ctx, arg)
@@ -85,7 +90,7 @@ func (s todoService) Create(ctx context.Context, req dto.CreateRequest) (dto.Res
 	return dto.NewResponse(todo), nil
 }
 
-func (s todoService) Update(ctx context.Context, idReq request.IDRequest, req dto.UpdateRequest) (dto.Response, error) {
+func (s todoService) Update(ctx *gin.Context, idReq request.IDRequest, req dto.UpdateRequest) (dto.Response, error) {
 	id, err := idReq.ParseID()
 	if err != nil {
 		return dto.Response{}, err
@@ -103,7 +108,7 @@ func (s todoService) Update(ctx context.Context, idReq request.IDRequest, req dt
 	return dto.NewResponse(todo), nil
 }
 
-func (s todoService) Delete(ctx context.Context, req request.IDRequest) error {
+func (s todoService) Delete(ctx *gin.Context, req request.IDRequest) error {
 	id, err := req.ParseID()
 	if err != nil {
 		return err

@@ -13,10 +13,11 @@ import (
 
 const countTodos = `-- name: CountTodos :one
 SELECT COUNT(*) FROM todos
+WHERE user_id = $1
 `
 
-func (q *Queries) CountTodos(ctx context.Context) (int64, error) {
-	row := q.db.QueryRow(ctx, countTodos)
+func (q *Queries) CountTodos(ctx context.Context, userID uuid.UUID) (int64, error) {
+	row := q.db.QueryRow(ctx, countTodos, userID)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -60,18 +61,20 @@ func (q *Queries) DeleteTodo(ctx context.Context, id uuid.UUID) error {
 
 const findAllTodos = `-- name: FindAllTodos :many
 SELECT id, title, completed, user_id, created_at, updated_at, deleted_at FROM todos
+WHERE user_id = $1
 ORDER BY id DESC
-LIMIT $1
-OFFSET $2
+LIMIT $2
+OFFSET $3
 `
 
 type FindAllTodosParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	UserID uuid.UUID `json:"userId"`
+	Limit  int32     `json:"limit"`
+	Offset int32     `json:"offset"`
 }
 
 func (q *Queries) FindAllTodos(ctx context.Context, arg FindAllTodosParams) ([]Todo, error) {
-	rows, err := q.db.Query(ctx, findAllTodos, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, findAllTodos, arg.UserID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

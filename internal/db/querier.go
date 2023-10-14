@@ -11,7 +11,7 @@ import (
 )
 
 type Querier interface {
-	CountTodos(ctx context.Context) (int64, error)
+	CountTodos(ctx context.Context, userID uuid.UUID) (int64, error)
 	CountUsers(ctx context.Context) (int64, error)
 	CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)

@@ -1,11 +1,13 @@
 -- name: CountTodos :one
-SELECT COUNT(*) FROM todos;
+SELECT COUNT(*) FROM todos
+WHERE user_id = $1;
 
 -- name: FindAllTodos :many
 SELECT * FROM todos
+WHERE user_id = $1
 ORDER BY id DESC
-LIMIT $1
-OFFSET $2;
+LIMIT $2
+OFFSET $3;
 
 -- name: FindTodoById :one
 SELECT * FROM todos

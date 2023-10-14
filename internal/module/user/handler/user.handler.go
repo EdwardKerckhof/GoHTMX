@@ -5,10 +5,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/EdwardKerckhof/gohtmx/internal/middleware"
 	"github.com/EdwardKerckhof/gohtmx/internal/module/user/dto"
 	"github.com/EdwardKerckhof/gohtmx/internal/module/user/service"
 	"github.com/EdwardKerckhof/gohtmx/pkg/request"
 	"github.com/EdwardKerckhof/gohtmx/pkg/response"
+	"github.com/EdwardKerckhof/gohtmx/pkg/token"
 )
 
 const (
@@ -22,21 +24,23 @@ type Handler interface {
 }
 
 type userHandler struct {
-	service   service.Service
-	apiRouter *gin.RouterGroup
+	service    service.Service
+	apiRouter  *gin.RouterGroup
+	tokenMaker token.Maker
 }
 
-func New(service service.Service, apiRouter *gin.RouterGroup) Handler {
+func New(service service.Service, apiRouter *gin.RouterGroup, tokenMaker token.Maker) Handler {
 	return &userHandler{
-		service:   service,
-		apiRouter: apiRouter,
+		service:    service,
+		apiRouter:  apiRouter,
+		tokenMaker: tokenMaker,
 	}
 }
 
 func (h *userHandler) RegisterRoutes() {
 	// Rest API /api/v1/users
 	userRouter := h.apiRouter.Group(prefix)
-	userRouter.GET("", h.FindAll)
+	userRouter.Use(middleware.AuthMiddleware(h.tokenMaker)).GET("", h.FindAll)
 	userRouter.GET("/:id", h.FindById)
 }
 

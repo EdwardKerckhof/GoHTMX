@@ -20,8 +20,8 @@ func InitModules(config config.Config, store db.Store, apiRouter *gin.RouterGrou
 	}
 
 	auth.InitModule(config, store, apiRouter, tokenMaker)
-	user.InitModule(store, apiRouter)
-	todo.InitModule(store, apiRouter)
+	user.InitModule(store, apiRouter, tokenMaker)
+	todo.InitModule(store, apiRouter, tokenMaker)
 
 	return nil
 }
