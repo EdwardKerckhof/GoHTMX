@@ -2,6 +2,10 @@
 
 ## TODO
 
+### General
+
+- [ ] Add commitlint
+
 ### API
 
 - [x] Pagination
