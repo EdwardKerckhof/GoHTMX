@@ -12,7 +12,6 @@ type Config struct {
 }
 
 type ApiConfig struct {
-	Binary         string `mapstructure:"API_BINARY" validate:"required"`
 	Mode           string `mapstructure:"API_MODE" validate:"required"`
 	Port           int    `mapstructure:"API_PORT" validate:"required"`
 	Version        string `mapstructure:"API_VERSION" validate:"required"`
