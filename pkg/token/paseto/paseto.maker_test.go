@@ -21,11 +21,12 @@ func TestPasetoMaker(t *testing.T) {
 	issuedAt := time.Now()
 	expiredAt := issuedAt.Add(duration)
 
-	jwt, err := maker.GenerateToken(userID, duration)
+	jwt, payload, err := maker.GenerateToken(userID, duration)
 	require.NoError(t, err)
 	require.NotEmpty(t, jwt)
+	require.NotEmpty(t, payload)
 
-	payload, err := maker.VerifyToken(jwt)
+	payload, err = maker.VerifyToken(jwt)
 	require.NoError(t, err)
 	require.NotEmpty(t, payload)
 
@@ -41,11 +42,12 @@ func TestExpiredPaseto(t *testing.T) {
 	require.NoError(t, err)
 
 	userID := uuid.New()
-	jwt, err := maker.GenerateToken(userID, -time.Minute)
+	jwt, payload, err := maker.GenerateToken(userID, -time.Minute)
 	require.NoError(t, err)
 	require.NotEmpty(t, jwt)
+	require.NotEmpty(t, payload)
 
-	payload, err := maker.VerifyToken(jwt)
+	payload, err = maker.VerifyToken(jwt)
 	require.Error(t, err)
 	require.EqualError(t, err, token.ErrExpiredToken.Error())
 	require.Nil(t, payload)

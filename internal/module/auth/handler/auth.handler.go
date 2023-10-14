@@ -18,6 +18,7 @@ type Handler interface {
 	RegisterRoutes()
 	Register(ctx *gin.Context)
 	Login(ctx *gin.Context)
+	RefreshAccessToken(ctx *gin.Context)
 }
 
 type authHandler struct {
@@ -37,6 +38,7 @@ func (h *authHandler) RegisterRoutes() {
 	authRouter := h.apiRouter.Group(prefix)
 	authRouter.POST("/register", h.Register)
 	authRouter.POST("/login", h.Login)
+	authRouter.POST("/refresh", h.RefreshAccessToken)
 }
 
 func (h *authHandler) Register(ctx *gin.Context) {
@@ -66,6 +68,22 @@ func (h *authHandler) Login(ctx *gin.Context) {
 	resp, err := h.service.Login(ctx, req)
 	if err != nil {
 		// TODO: better error handling
+		ctx.JSON(http.StatusInternalServerError, response.Error(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response.Success(resp))
+}
+
+func (h *authHandler) RefreshAccessToken(ctx *gin.Context) {
+	var req dto.RefreshTokenRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, response.Error(err))
+		return
+	}
+
+	resp, err := h.service.RefreshAccessToken(ctx, req)
+	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, response.Error(err))
 		return
 	}

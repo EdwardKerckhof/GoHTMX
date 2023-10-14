@@ -13,12 +13,14 @@ import (
 type Querier interface {
 	CountTodos(ctx context.Context, userID uuid.UUID) (int64, error)
 	CountUsers(ctx context.Context) (int64, error)
+	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteTodo(ctx context.Context, id uuid.UUID) error
 	DeleteUser(ctx context.Context, id uuid.UUID) error
 	FindAllTodos(ctx context.Context, arg FindAllTodosParams) ([]Todo, error)
 	FindAllUsers(ctx context.Context, arg FindAllUsersParams) ([]User, error)
+	FindSessionById(ctx context.Context, id uuid.UUID) (Session, error)
 	FindTodoById(ctx context.Context, id uuid.UUID) (Todo, error)
 	FindUserByEmail(ctx context.Context, email string) (User, error)
 	FindUserById(ctx context.Context, id uuid.UUID) (User, error)

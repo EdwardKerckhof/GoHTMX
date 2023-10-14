@@ -37,8 +37,9 @@ type Logger struct {
 }
 
 type Auth struct {
-	TokenSymmetricKey     string        `mapstructure:"TOKEN_SYMMETRIC_KEY" validate:"required"`
-	AccessTokenExpiration time.Duration `mapstructure:"ACCESS_TOKEN_EXPIRATION" validate:"required"`
+	TokenSymmetricKey      string        `mapstructure:"TOKEN_SYMMETRIC_KEY" validate:"required"`
+	AccessTokenExpiration  time.Duration `mapstructure:"ACCESS_TOKEN_EXPIRATION" validate:"required"`
+	RefreshTokenExpiration time.Duration `mapstructure:"REFRESH_TOKEN_EXPIRATION" validate:"required"`
 }
 
 // Load reads in an env file and loads into a config struct

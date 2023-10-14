@@ -1,6 +1,8 @@
 package dto
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 
 	"github.com/EdwardKerckhof/gohtmx/internal/db"
@@ -13,8 +15,17 @@ type Response struct {
 }
 
 type LoginResponse struct {
-	AccessToken string   `json:"accessToken"`
-	User        Response `json:"user"`
+	SessionID             uuid.UUID `json:"sessionId"`
+	AccessToken           string    `json:"accessToken"`
+	AccessTokenExpiresAt  time.Time `json:"accessTokenExpiresAt"`
+	RefreshToken          string    `json:"refreshToken"`
+	RefreshTokenExpiresAt time.Time `json:"refreshTokenExpiresAt"`
+	User                  Response  `json:"user"`
+}
+
+type RefreshTokenResponse struct {
+	AccessToken          string    `json:"accessToken"`
+	AccessTokenExpiresAt time.Time `json:"accessTokenExpiresAt"`
 }
 
 func NewResponse(dbAuth db.User) Response {
@@ -25,9 +36,13 @@ func NewResponse(dbAuth db.User) Response {
 	}
 }
 
-func NewLoginResponse(accessToken string, dbAuth db.User) LoginResponse {
+func NewLoginResponse(dbAuth db.User, sessionID uuid.UUID, accessToken string, accessTokenExpiresAt time.Time, refreshToken string, refreshTokenExpiresAt time.Time) LoginResponse {
 	return LoginResponse{
-		AccessToken: accessToken,
-		User:        NewResponse(dbAuth),
+		SessionID:             sessionID,
+		AccessToken:           accessToken,
+		AccessTokenExpiresAt:  accessTokenExpiresAt,
+		RefreshToken:          refreshToken,
+		RefreshTokenExpiresAt: refreshTokenExpiresAt,
+		User:                  NewResponse(dbAuth),
 	}
 }

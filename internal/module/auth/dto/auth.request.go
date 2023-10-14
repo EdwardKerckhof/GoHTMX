@@ -17,6 +17,10 @@ type LoginRequest struct {
 	Password string `json:"password" form:"password" binding:"required,min=5,max=255"`
 }
 
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refreshToken" form:"refreshToken" binding:"required"`
+}
+
 func (r *RegisterRequest) HashPassword() (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(r.Password), bcrypt.DefaultCost)
 	if err != nil {

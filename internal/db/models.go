@@ -10,6 +10,17 @@ import (
 	"github.com/google/uuid"
 )
 
+type Session struct {
+	ID           uuid.UUID `json:"id"`
+	UserID       uuid.UUID `json:"userId"`
+	RefreshToken string    `json:"refreshToken"`
+	UserAgent    string    `json:"userAgent"`
+	ClientIp     string    `json:"clientIp"`
+	IsBlocked    bool      `json:"isBlocked"`
+	ExpiresAt    time.Time `json:"expiresAt"`
+	CreatedAt    time.Time `json:"createdAt"`
+}
+
 type Todo struct {
 	ID        uuid.UUID  `json:"id"`
 	Title     string     `json:"title"`
