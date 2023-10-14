@@ -71,7 +71,10 @@ build_tmp:
 
 develop: build_tmp ## Run the project in development mode
 	echo "Starting docker environment"
-	docker compose -f docker-compose.yml up -d --build
+	docker compose -d --build
+
+develop_stop: ## Stop the docker environment
+	docker compose down
 
 ## Deps:
 deps_reset: ## Reset the dependencies

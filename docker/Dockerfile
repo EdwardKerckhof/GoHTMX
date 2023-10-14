@@ -13,11 +13,13 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o api cmd/gohtmx/main.go
 
 # RUN
 FROM alpine:3.18
+
 WORKDIR /apps/gohtmx/api
 
 COPY --from=build /apps/gohtmx/api/api .
+COPY .env .
 
 EXPOSE 1337
-CMD ["./main"]
+CMD [ "./api" ]
 
 HEALTHCHECK --interval=20s --timeout=3s --retries=3 --start-period=60s CMD curl -f http://localhost:1337/healthcheck || exit 1

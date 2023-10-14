@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.9"
 
 services:
   db:
@@ -20,6 +20,21 @@ services:
       interval: 10s
       retries: 5
 
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: gohtmx-api
+    restart: always
+    ports:
+      - ${API_PORT}:${API_PORT}
+    networks:
+      - gohtmx
+    environment:
+      DB_HOST: db
+    depends_on:
+      - db
+
   adminer:
     image: adminer
     container_name: gohtmx-adminer
@@ -28,6 +43,8 @@ services:
       - gohtmx
     ports:
       - 8080:8080
+    depends_on:
+      - db
 
 networks:
   gohtmx:
